@@ -1,10 +1,7 @@
-import uuid
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils import timezone
 
-from core.base_models import BikreeBaseModel
+from core.base_abstract_models import BikreeBaseModel
 from users.managers import CustomUserManager
 
 
@@ -22,14 +19,13 @@ class Role(BikreeBaseModel):
         return f"guid: {self.guid} name: {self.name}"
 
 
-class User(AbstractUser):
+class User(AbstractUser, BikreeBaseModel):
     username = None
-    guid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     phone = models.CharField(unique=True, max_length=30)
-    date_joined = models.DateTimeField(default=timezone.now)
     role = models.ForeignKey(
         Role,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True, blank=True
     )
 
     USERNAME_FIELD = "phone"
@@ -48,4 +44,4 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"{self.email} - {self.guid.hex}"
+        return f"{self.phone} - {self.guid.hex}"
