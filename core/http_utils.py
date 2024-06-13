@@ -10,7 +10,7 @@ class HttpUtil:
         return Response(
             {
                 "data": data or {},
-                "response_message": message,
+                "response_message": message if message else "success",
                 "response_code": code,
             },
             status=code,

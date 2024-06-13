@@ -22,7 +22,7 @@ class BaseUserPermission(permissions.BasePermission):
         )
 
     def has_permission(self, request, view):
-        if "user_id" == request.user.id:
+        if request.user and request.user.id:
             try:
                 request.user = self.find_user(request.user.id)
             except User.DoesNotExist:

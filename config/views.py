@@ -9,10 +9,20 @@ from core.http_utils import HttpUtil
 
 class UomApi(ViewSet):
     serializer_class = UomSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAdmin | IsBusinessAnalyst]
     lookup_field = "guid"
 
+    def get_permissions(self):
+        if self.action == "list":
+            return [permissions.IsAuthenticated()]
+        return super().get_permissions()
+
     def list(self, request):
+        """
+        any authenticated person can view uom lists
+        :param request: None
+        :return: uoms
+        """
         uoms = Uom.objects.filter(status=True)
         uom_serializer = self.serializer_class(
             uoms,

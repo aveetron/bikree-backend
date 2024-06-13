@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from core.routes.config import config_router
+from core.routes.shop import shop_router
 from core.routes.users import users_router
 
 urlpatterns = [
@@ -15,5 +16,6 @@ urlpatterns = [
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/v1/users/', include(users_router.urls)),
     path('api/v1/config/', include(config_router.urls)),
+    path('api/v1/shop/', include(shop_router.urls)),
 ]
 
