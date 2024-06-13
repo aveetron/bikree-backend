@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from users.abstract_serializers import BikreeBaseWithUserSerializer
 from users.serializers import UserSerializer
-from .models import Shop
+from .models import Shop, Category
 
 
 class ShopSerializer(BikreeBaseWithUserSerializer):
@@ -50,3 +50,15 @@ class ShopSerializer(BikreeBaseWithUserSerializer):
         for field in exclude_fields:
             data.pop(field, None)
         return data
+    
+
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=True)
+
+    class Meta:
+        model = Category
+        fields = [
+            "guid", "name", "status" 
+        ]

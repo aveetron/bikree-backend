@@ -2,9 +2,9 @@ from rest_framework import status
 from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
-from core.permissions import IsShopOwner
-from shop.models import Shop
-from shop.serializers import ShopSerializer
+from core.permissions import IsShopOwner, IsShopManager
+from shop.models import Shop, Category
+from shop.serializers import ShopSerializer, CategorySerializer
 
 
 class ShopApi(ViewSet):
@@ -98,4 +98,97 @@ class ShopApi(ViewSet):
         except Shop.DoesNotExist:
             return HttpUtil.error_response(
                 message="shop not found."
+            )
+
+
+class CategoryApi(ViewSet):
+    serializer_class = CategorySerializer
+    permission_classes = [IsShopOwner, IsShopManager]
+
+    def list(self, request):
+        categories = Category.objects.filter(
+            owner=request.user,
+            status=True
+        )
+        category_serializer = self.serializer_class(
+            categories, many=True
+        )
+        return HttpUtil.success_response(
+            data=category_serializer.data,
+            message="success"
+        )
+
+    def create(self, request):
+        category_serializer = self.serializer_class(
+            data=request.data,
+            context={"user": request.user}
+        )
+        if not category_serializer.is_valid():
+            return HttpUtil.error_response(
+                category_serializer.errors
+            )
+        category_serializer.save(
+            owner=request.user
+        )
+        return HttpUtil.success_response(
+            data=category_serializer.data,
+            message="created",
+            code=status.HTTP_201_CREATED
+        )
+
+    def retrieve(self, request, guid):
+        try:
+            category = Category.objects.get(
+                guid=guid,
+                owner=request.user,
+                status=True
+            )
+            category_serializer = CategorySerializer(category)
+            return HttpUtil.success_response(
+                data=category_serializer.data
+            )
+        except Category.DoesNotExist:
+            return HttpUtil.error_response(
+                message="category not found."
+            )
+
+    def update(self, request, guid):
+        try:
+            category = Category.objects.get(
+                guid=guid,
+                owner=request.user,
+                status=True
+            )
+            category_serializer = CategorySerializer(
+                category, data=request.data,
+                context={"user": request.user}
+            )
+            if not category_serializer.is_valid():
+                return HttpUtil.error_response(
+                    category_serializer.errors
+                )
+            category_serializer.save()
+
+            return HttpUtil.success_response(
+                data=category_serializer.data
+            )
+        except Category.DoesNotExist:
+            return HttpUtil.error_response(
+                message="category not found."
+            )
+
+    def delete(self, request, guid):
+        try:
+            category = Category.objects.get(
+                guid=guid,
+                owner=request.user,
+                status=True
+            )
+            category.delete()
+            return HttpUtil.success_response(
+                message="deleted"
+            )
+        except Category.DoesNotExist:
+            return HttpUtil.error_response(
+                message="category not found."
             )
