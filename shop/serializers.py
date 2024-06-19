@@ -50,15 +50,15 @@ class ShopSerializer(BikreeBaseWithUserSerializer):
         for field in exclude_fields:
             data.pop(field, None)
         return data
-    
-
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    name = serializers.CharField(required=True)
+    guid = serializers.CharField(required=False,
+                                 source="guid.hex",
+                                 read_only=True)
 
     class Meta:
         model = Category
         fields = [
-            "guid", "name", "status" 
+            "guid", "name", "status"
         ]

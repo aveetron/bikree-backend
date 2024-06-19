@@ -1,8 +1,11 @@
+import uuid
+
+from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
-from core.permissions import IsShopOwner, IsShopManager
+from core.permissions import IsShopOwner, IsShopManager, IsShopEmployee
 from shop.models import Shop, Category
 from shop.serializers import ShopSerializer, CategorySerializer
 
@@ -50,6 +53,11 @@ class ShopApi(ViewSet):
                 owner=request.user,
                 status=True
             )
+            if shop:
+                return HttpUtil.error_response(
+                    message="shop not found!"
+                )
+
             shop_serializer = ShopSerializer(shop)
             return HttpUtil.success_response(
                 data=shop_serializer.data
@@ -103,11 +111,12 @@ class ShopApi(ViewSet):
 
 class CategoryApi(ViewSet):
     serializer_class = CategorySerializer
-    permission_classes = [IsShopOwner, IsShopManager]
+    permission_classes = [IsShopOwner]
+    lookup_field = "guid"
 
     def list(self, request):
         categories = Category.objects.filter(
-            owner=request.user,
+            created_by=request.user,
             status=True
         )
         category_serializer = self.serializer_class(
@@ -119,16 +128,26 @@ class CategoryApi(ViewSet):
         )
 
     def create(self, request):
+        # if this category name exists
+        if Category.objects.filter(
+            created_by=request.user,
+            name=request.data["name"]
+        ).exists():
+            return HttpUtil.error_response(
+                message="name with this category already exists!"
+            )
+
         category_serializer = self.serializer_class(
-            data=request.data,
-            context={"user": request.user}
+            data=request.data
         )
         if not category_serializer.is_valid():
             return HttpUtil.error_response(
                 category_serializer.errors
             )
+
         category_serializer.save(
-            owner=request.user
+            created_by=request.user,
+            status=True
         )
         return HttpUtil.success_response(
             data=category_serializer.data,
@@ -140,7 +159,7 @@ class CategoryApi(ViewSet):
         try:
             category = Category.objects.get(
                 guid=guid,
-                owner=request.user,
+                created_by=request.user,
                 status=True
             )
             category_serializer = CategorySerializer(category)
@@ -156,12 +175,11 @@ class CategoryApi(ViewSet):
         try:
             category = Category.objects.get(
                 guid=guid,
-                owner=request.user,
+                created_by=request.user,
                 status=True
             )
             category_serializer = CategorySerializer(
-                category, data=request.data,
-                context={"user": request.user}
+                category, data=request.data
             )
             if not category_serializer.is_valid():
                 return HttpUtil.error_response(
@@ -181,7 +199,7 @@ class CategoryApi(ViewSet):
         try:
             category = Category.objects.get(
                 guid=guid,
-                owner=request.user,
+                created_by=request.user,
                 status=True
             )
             category.delete()

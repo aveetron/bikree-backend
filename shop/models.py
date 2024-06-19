@@ -15,10 +15,8 @@ class Shop(BikreeBaseModelWithUser):
         return f"guid: {self.guid} , name: {self.name}"
 
 
-
-
 class Category(BikreeBaseModelWithUser):
     name = models.CharField(max_length=30)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"

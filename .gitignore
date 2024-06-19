@@ -3,3 +3,4 @@ venv
 db.sqlite3
 migrations
 static
+__pycache__
