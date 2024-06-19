@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from users.abstract_serializers import BikreeBaseWithUserSerializer
 from users.serializers import UserSerializer
-from .models import Shop, Category
+from .models import Shop, Category, Inventory
 
 
 class ShopSerializer(BikreeBaseWithUserSerializer):
@@ -62,3 +62,13 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = [
             "guid", "name", "status"
         ]
+
+
+class InventorySerializer(serializers.ModelSerializer):
+    guid = serializers.CharField(required=False,
+                                 source="guid.hex",
+                                 read_only=True)
+
+    class Meta:
+        model = Inventory
+        fields = "__all__"
