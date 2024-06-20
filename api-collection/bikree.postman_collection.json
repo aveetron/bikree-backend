@@ -46,7 +46,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"phone\": \"01816382390\",\n    \"password\": \"12345\"\n}",
+							"raw": "{\n    \"phone\": \"01781568145\",\n    \"password\": \"12345\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -208,13 +208,45 @@
 					},
 					"response": []
 				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
 			"name": "shop",
 			"item": [
 				{
-					"name": "store list",
+					"name": "shop list",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -240,7 +272,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"janani traders\"\n}",
+							"raw": "{\n    \"name\": \"radha rani oil mills\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -268,7 +300,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/shop/f1d2a1f858a34f158bce9112ce6d6a3d/",
+							"raw": "{{base_url}}/api/v1/shop/c434972bb67e4a1381b60c38f2816096/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -276,7 +308,7 @@
 								"api",
 								"v1",
 								"shop",
-								"f1d2a1f858a34f158bce9112ce6d6a3d",
+								"c434972bb67e4a1381b60c38f2816096",
 								""
 							]
 						}
@@ -298,7 +330,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/shop/f1d2a1f858a34f158bce9112ce6d6a3d/",
+							"raw": "{{base_url}}/api/v1/shop/c434972bb67e4a1381b60c38f2816096/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -306,7 +338,7 @@
 								"api",
 								"v1",
 								"shop",
-								"f1d2a1f858a34f158bce9112ce6d6a3d",
+								"c434972bb67e4a1381b60c38f2816096",
 								""
 							]
 						}
@@ -328,6 +360,325 @@
 								"v1",
 								"shop",
 								"f67d6cbca64f451a8f5b3393c21c911a",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{shop_owner_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "category list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/category/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"finish goods\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/category/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "category retrieve",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/category/6ab2605e7876445a8724dfb5724463b0",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								"6ab2605e7876445a8724dfb5724463b0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"not finished goods\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/category/6ab2605e7876445a8724dfb5724463b0/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								"6ab2605e7876445a8724dfb5724463b0",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/category/6ab2605e7876445a8724dfb5724463b0/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category",
+								"6ab2605e7876445a8724dfb5724463b0",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{shop_owner_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "inventory",
+			"item": [
+				{
+					"name": "item list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/inventory?shop_guid=c434972bb67e4a1381b60c38f2816096",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"inventory"
+							],
+							"query": [
+								{
+									"key": "shop_guid",
+									"value": "c434972bb67e4a1381b60c38f2816096"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create item",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"shop_guid\": \"c434972bb67e4a1381b60c38f2816096\",\n    \"name\": \"soyabin oil\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/inventory/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"inventory",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/inventory/ab64f94fd5c841c9b0c15bae7cbe56f3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"inventory",
+								"ab64f94fd5c841c9b0c15bae7cbe56f3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update item",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"shorisha oil\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/inventory/ab64f94fd5c841c9b0c15bae7cbe56f3/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"inventory",
+								"ab64f94fd5c841c9b0c15bae7cbe56f3",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete item",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/inventory/ab64f94fd5c841c9b0c15bae7cbe56f3/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"inventory",
+								"ab64f94fd5c841c9b0c15bae7cbe56f3",
 								""
 							]
 						}
