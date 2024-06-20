@@ -1,6 +1,5 @@
-import uuid
+import decimal
 
-from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.viewsets import ViewSet
 
@@ -50,7 +49,6 @@ class ShopApi(ViewSet):
         try:
             shop = Shop.objects.get(
                 guid=guid,
-                owner=request.user,
                 status=True
             )
             if shop:
@@ -130,8 +128,8 @@ class CategoryApi(ViewSet):
     def create(self, request):
         # if this category name exists
         if Category.objects.filter(
-            created_by=request.user,
-            name=request.data["name"]
+                created_by=request.user,
+                name=request.data["name"]
         ).exists():
             return HttpUtil.error_response(
                 message="name with this category already exists!"
@@ -329,3 +327,42 @@ class InventoryApi(ViewSet):
             return HttpUtil.error_response(
                 "Inventory doesn't found!"
             )
+
+
+class StockEntryApi(ViewSet):
+    serializer_class = InventorySerializer
+    permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
+    lookup_field = "guid"
+
+    def update(self, request, guid):
+        try:
+            inventory = Inventory.objects.get(
+                guid=guid,
+                status=True,
+                shop__guid=request.query_params.get("shop_guid")
+            )
+
+            if "total_stock" not in request.data:
+                return HttpUtil.error_response(message="stock qty missing.")
+
+            request.data["total_stock"] = decimal.Decimal(request.data["total_stock"]) + decimal.Decimal(
+                inventory.total_stock)
+
+            # Ensure required fields have default values
+            data = request.data.copy()
+            data.setdefault('name', inventory.name)
+            data.setdefault('created_by', inventory.created_by.id if inventory.created_by else None)
+            data.setdefault('shop', inventory.shop.id if inventory.shop else None)
+
+            # Update the inventory item
+            inventory_serializer = self.serializer_class(inventory, data=data)
+            if not inventory_serializer.is_valid():
+                return HttpUtil.error_response(message=inventory_serializer.errors)
+
+            inventory_serializer.save()
+            return HttpUtil.success_response(message="Inventory updated successfully.")
+
+        except Inventory.DoesNotExist:
+                return HttpUtil.error_response(
+                    message="inventory item not found!"
+                )
