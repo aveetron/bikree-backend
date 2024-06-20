@@ -240,8 +240,9 @@ class InventoryApi(ViewSet):
         if "status" not in request.data:
             request.data["status"] = True
 
-        if "shop" in request.data:
-            shop = Shop.objects.get(guid=request.data["shop"])
+        if "shop_guid" in request.data:
+            shop = Shop.objects.get(guid=request.data["shop_guid"],
+                                    status=True)
             if shop:
                 request.data["shop"] = shop.pk
 
@@ -258,3 +259,73 @@ class InventoryApi(ViewSet):
             message="success",
             code=status.HTTP_201_CREATED
         )
+
+    def retrieve(self, request, guid):
+        try:
+            inventory = Inventory.objects.get(
+                guid=guid,
+                status=True
+            )
+            inventory_serializer = self.serializer_class(
+                inventory, many=False
+            )
+            return HttpUtil.success_response(
+                data=inventory_serializer.data
+            )
+
+        except Inventory.DoesNotExist:
+            return HttpUtil.error_response(
+                "Inventory doesn't found!"
+            )
+
+    def update(self, request, guid):
+        try:
+            inventory = Inventory.objects.get(
+                guid=guid,
+                status=True
+            )
+            if 'name' not in request.data:
+                request.data['name'] = inventory.name
+
+            if 'created_by' not in request.data:
+                request.data['created_by'] = inventory.created_by.id
+
+            if 'shop' not in request.data:
+                request.data['shop'] = inventory.shop.id
+
+            inventory_serializer = self.serializer_class(
+                inventory, data=request.data
+            )
+            if not inventory_serializer.is_valid():
+                return HttpUtil.error_response(
+                    message=inventory_serializer.errors
+                )
+
+            inventory_serializer.save(
+                updated_by=request.user
+            )
+            return HttpUtil.success_response(
+                data=inventory_serializer.data,
+                message="updated"
+            )
+
+        except Inventory.DoesNotExist:
+            return HttpUtil.error_response(
+                "Inventory doesn't found!"
+            )
+
+    def delete(self, request, guid):
+        try:
+            inventory = Inventory.objects.get(
+                guid=guid,
+                status=True
+            )
+            inventory.delete()
+            return HttpUtil.success_response(
+                message="deleted"
+            )
+
+        except Inventory.DoesNotExist:
+            return HttpUtil.error_response(
+                "Inventory doesn't found!"
+            )

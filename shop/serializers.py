@@ -68,7 +68,18 @@ class InventorySerializer(serializers.ModelSerializer):
     guid = serializers.CharField(required=False,
                                  source="guid.hex",
                                  read_only=True)
+    shop_guid = serializers.CharField(required=False,
+                                      read_only=True,
+                                      source="shop.guid.hex")
+    shop_name = serializers.CharField(required=False,
+                                      read_only=True,
+                                      source="shop.name")
 
     class Meta:
         model = Inventory
-        fields = "__all__"
+        exclude = ["id"]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation.pop('shop', None)  # Remove the 'shop' field from the representation
+        return representation
