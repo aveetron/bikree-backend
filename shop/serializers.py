@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from rest_framework import serializers
 
 from users.abstract_serializers import BikreeBaseWithUserSerializer
@@ -11,7 +13,7 @@ class ShopSerializer(BikreeBaseWithUserSerializer):
     licence_no = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     owner = UserSerializer(read_only=True)
 
-    def validate(self, attrs):
+    def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         name = attrs.get("name")
         owner = attrs.get("owner")
         address = attrs.get("address")
@@ -31,20 +33,20 @@ class ShopSerializer(BikreeBaseWithUserSerializer):
 
         return attrs
 
-    def create(self, validated_data):
+    def create(self, validated_data: Dict[str, Any]) -> Shop:
         validated_data["owner"] = validated_data["owner"]
         validated_data["created_by"] = validated_data["owner"]
         validated_data["status"] = True
         return Shop.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Shop, validated_data: Dict[str, Any]) -> Shop:
         instance.name = validated_data.get("name", instance.name)
         instance.address = validated_data.get("address", instance.address)
         instance.licence_no = validated_data.get("licence_no", instance.licence_no)
         instance.save()
         return instance
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: Shop) -> Dict[str, Any]:
         data = super().to_representation(instance)
         exclude_fields = ['created_by', 'updated_by']  # Add any fields you want to exclude here
         for field in exclude_fields:

@@ -8,5 +8,5 @@ class Uom(BikreeBaseModel):
         max_length=30
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name

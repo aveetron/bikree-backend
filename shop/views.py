@@ -363,9 +363,9 @@ class StockEntryApi(ViewSet):
             return HttpUtil.success_response(message="Inventory updated successfully.")
 
         except Inventory.DoesNotExist:
-                return HttpUtil.error_response(
-                    message="inventory item not found!"
-                )
+            return HttpUtil.error_response(
+                message="inventory item not found!"
+            )
 
 
 class StockOutApi(ViewSet):
@@ -407,6 +407,6 @@ class StockOutApi(ViewSet):
             return HttpUtil.success_response(message="Inventory updated successfully.")
 
         except Inventory.DoesNotExist:
-                return HttpUtil.error_response(
-                    message="inventory item not found!"
-                )
+            return HttpUtil.error_response(
+                message="inventory item not found!"
+            )

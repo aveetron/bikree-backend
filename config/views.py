@@ -1,4 +1,6 @@
 from rest_framework import status, permissions
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from config.models import Uom
@@ -12,12 +14,12 @@ class UomApi(ViewSet):
     permission_classes = [IsAdmin | IsBusinessAnalyst]
     lookup_field = "guid"
 
-    def get_permissions(self):
+    def get_permissions(self) -> list:
         if self.action == "list":
             return [permissions.IsAuthenticated()]
         return super().get_permissions()
 
-    def list(self, request):
+    def list(self, request: Request) -> Response:
         """
         any authenticated person can view uom lists
         :param request: None
@@ -32,7 +34,7 @@ class UomApi(ViewSet):
             data=uom_serializer.data
         )
 
-    def create(self, request):
+    def create(self, request: Request) -> Response:
         uom_serializer = self.serializer_class(
             data=request.data
         )
@@ -49,7 +51,7 @@ class UomApi(ViewSet):
             message="created"
         )
 
-    def retrieve(self, request, guid=None):
+    def retrieve(self, request: Request, guid: str = None) -> Response:
         try:
             uom = Uom.objects.get(guid=guid)
             uom_serializer = self.serializer_class(
@@ -63,7 +65,7 @@ class UomApi(ViewSet):
                 message="uom not found!"
             )
 
-    def update(self, request, guid):
+    def update(self, request: Request, guid: str = None) -> Response:
         try:
             uom = Uom.objects.get(guid=guid)
             uom_serializer = self.serializer_class(
@@ -83,7 +85,7 @@ class UomApi(ViewSet):
                 message="uom not found!"
             )
 
-    def delete(self, request, guid):
+    def delete(self, request: Request, guid: str = None) -> Response:
         try:
             uom = Uom.objects.get(guid=guid)
             uom.delete()

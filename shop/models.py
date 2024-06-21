@@ -11,14 +11,14 @@ class Shop(BikreeBaseModelWithUser):
     owner = models.ForeignKey(User, on_delete=models.CASCADE,
                               related_name="store_owner")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"guid: {self.guid} , name: {self.name}"
 
 
 class Category(BikreeBaseModelWithUser):
     name = models.CharField(max_length=30)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -32,7 +32,7 @@ class Inventory(BikreeBaseModelWithUser):
     floor = models.CharField(max_length=100, null=True, blank=True)
     rack = models.CharField(max_length=100, null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"shop {self.shop.name}: name {self.name}"
 
 
