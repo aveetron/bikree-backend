@@ -1,6 +1,8 @@
 import decimal
 
 from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
@@ -14,7 +16,7 @@ class ShopApi(ViewSet):
     permission_classes = [IsShopOwner]
     lookup_field = "guid"
 
-    def list(self, request):
+    def list(self, request: Request) -> Response:
         shops = Shop.objects.filter(
             owner=request.user,
             status=True
@@ -27,7 +29,7 @@ class ShopApi(ViewSet):
             message="success"
         )
 
-    def create(self, request):
+    def create(self, request: Request) -> Response:
         shop_serializer = self.serializer_class(
             data=request.data,
             context={"user": request.user}
@@ -45,7 +47,7 @@ class ShopApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def retrieve(self, request, guid):
+    def retrieve(self, request: Request, guid: str = None) -> Response:
         try:
             shop = Shop.objects.get(
                 guid=guid,
@@ -65,7 +67,7 @@ class ShopApi(ViewSet):
                 message="shop not found."
             )
 
-    def update(self, request, guid):
+    def update(self, request: Request, guid: str = None) -> Response:
         try:
             shop = Shop.objects.get(
                 guid=guid,
@@ -90,7 +92,7 @@ class ShopApi(ViewSet):
                 message="shop not found."
             )
 
-    def delete(self, request, guid):
+    def delete(self, request: Request, guid: str = None) -> Response:
         try:
             shop = Shop.objects.get(
                 guid=guid,
@@ -112,7 +114,7 @@ class CategoryApi(ViewSet):
     permission_classes = [IsShopOwner]
     lookup_field = "guid"
 
-    def list(self, request):
+    def list(self, request: Request) -> Response:
         categories = Category.objects.filter(
             created_by=request.user,
             status=True
@@ -125,7 +127,7 @@ class CategoryApi(ViewSet):
             message="success"
         )
 
-    def create(self, request):
+    def create(self, request: Request) -> Response:
         # if this category name exists
         if Category.objects.filter(
                 created_by=request.user,
@@ -153,7 +155,7 @@ class CategoryApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def retrieve(self, request, guid):
+    def retrieve(self, request: Request, guid: str = None) -> Response:
         try:
             category = Category.objects.get(
                 guid=guid,
@@ -169,7 +171,7 @@ class CategoryApi(ViewSet):
                 message="category not found."
             )
 
-    def update(self, request, guid):
+    def update(self, request: Request, guid: str = None) -> Response:
         try:
             category = Category.objects.get(
                 guid=guid,
@@ -193,7 +195,7 @@ class CategoryApi(ViewSet):
                 message="category not found."
             )
 
-    def delete(self, request, guid):
+    def delete(self, request: Request, guid: str = None) -> Response:
         try:
             category = Category.objects.get(
                 guid=guid,
@@ -215,7 +217,7 @@ class InventoryApi(ViewSet):
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
     lookup_field = "guid"
 
-    def list(self, request):
+    def list(self, request: Request) -> Response:
         shop_guid = request.query_params.get("shop_guid")
         inventories = Inventory.objects.filter(
             shop__guid=shop_guid,
@@ -229,7 +231,7 @@ class InventoryApi(ViewSet):
             data=shop_serializer.data
         )
 
-    def create(self, request):
+    def create(self, request: Request) -> Response:
         shop = None
 
         if "created_by" not in request.data:
@@ -258,7 +260,7 @@ class InventoryApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def retrieve(self, request, guid):
+    def retrieve(self, request: Request, guid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
                 guid=guid,
@@ -276,7 +278,7 @@ class InventoryApi(ViewSet):
                 "Inventory doesn't found!"
             )
 
-    def update(self, request, guid):
+    def update(self, request: Request, guid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
                 guid=guid,
@@ -312,7 +314,7 @@ class InventoryApi(ViewSet):
                 "Inventory doesn't found!"
             )
 
-    def delete(self, request, guid):
+    def delete(self, request: Request, guid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
                 guid=guid,
@@ -334,7 +336,7 @@ class StockEntryApi(ViewSet):
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
     lookup_field = "guid"
 
-    def update(self, request, guid):
+    def update(self, request: Request, guid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
                 guid=guid,
@@ -373,7 +375,7 @@ class StockOutApi(ViewSet):
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
     lookup_field = "guid"
 
-    def update(self, request, guid):
+    def update(self, request: Request, guid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
                 guid=guid,

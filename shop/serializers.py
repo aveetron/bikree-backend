@@ -81,7 +81,7 @@ class InventorySerializer(serializers.ModelSerializer):
         model = Inventory
         exclude = ["id"]
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: Inventory) -> Dict[str, Any]:
         representation = super().to_representation(instance)
         representation.pop('shop', None)  # Remove the 'shop' field from the representation
         return representation
