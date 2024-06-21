@@ -1,4 +1,6 @@
 from rest_framework import permissions, status
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
@@ -9,7 +11,7 @@ class RegistrationApi(ViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
 
-    def create(self, request, format=None):
+    def create(self, request: Request, format=None) -> Response:
         payload = request.data
         if not payload["phone"]:
             return HttpUtil.error_response("Phone is required")

@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from rest_framework import serializers, status
@@ -17,7 +19,7 @@ class UserSerializer(BikreeBaseSerializer):
     confirm_password = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
 
-    def validate(self, attrs):
+    def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         phone = User.objects.filter(
             phone=attrs.get("phone")
         ).exists()
@@ -33,7 +35,7 @@ class UserSerializer(BikreeBaseSerializer):
 
         return super().validate(attrs)
 
-    def create(self, validated_data):
+    def create(self, validated_data: Dict[str, Any]) -> User:
         if validated_data.get("password") != validated_data.pop("confirm_password"):
             raise ValidationError(
                 "Confirm password doesn't match", code=status.HTTP_403_FORBIDDEN
@@ -45,7 +47,7 @@ class UserSerializer(BikreeBaseSerializer):
             new_user.save()
             return new_user
 
-    def update(self, instance, validated_data):
+    def update(self, instance: User, validated_data: Dict[str, Any]) -> User:
         instance.first_name = validated_data.get("first_name", instance.first_name)
         instance.last_name = validated_data.get("last_name", instance.last_name)
 

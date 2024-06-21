@@ -15,7 +15,7 @@ class Role(BikreeBaseModel):
         max_length=30
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"guid: {self.guid} name: {self.name}"
 
 
@@ -43,5 +43,5 @@ class User(AbstractUser, BikreeBaseModel):
 
     objects = CustomUserManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.phone} - {self.guid.hex}"
