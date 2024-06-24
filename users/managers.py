@@ -3,8 +3,6 @@ from typing import Union, Any, Dict
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
-from users.models import User
-
 
 class CustomUserManager(BaseUserManager):
     """
@@ -12,7 +10,7 @@ class CustomUserManager(BaseUserManager):
     for authentication instead of usernames.
     """
 
-    def create_user(self, phone: str, password: str, **extra_fields: Dict[str, Any]) -> User:
+    def create_user(self, phone: str, password: str, **extra_fields: Dict[str, Any]):
         """
         Create and save a User with the given email and password.
         """
@@ -24,7 +22,7 @@ class CustomUserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, phone: str, password: str, **extra_fields: Dict[str, Any]) -> Union[User, Any]:
+    def create_superuser(self, phone: str, password: str, **extra_fields: Dict[str, Any]):
         """
         Create and save a SuperUser with the given email and password.
         """
