@@ -8,6 +8,7 @@ SECRET_KEY = 'django-insecure-f1yqhfo=&9bdmwn0_jr0-psd(%p3d$-3k8xjb+2^+ku$6q#^3s
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CORS_ORIGIN_ALLOW_ALL = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'config',
     'shop',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -31,6 +33,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 REST_FRAMEWORK = {
