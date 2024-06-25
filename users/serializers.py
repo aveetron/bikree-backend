@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers, status
 
 from core.base_abstract_serializers import BikreeBaseSerializer
-from .models import User
+from .models import User, Role
 
 
 class UserSerializer(BikreeBaseSerializer):
@@ -44,6 +44,18 @@ class UserSerializer(BikreeBaseSerializer):
         else:
             new_user = User(**validated_data)
             new_user.password = make_password(validated_data.get("password"))
+            new_user.is_active = True
+            new_user.status = True
+            """
+                by default the role of the user will be shop owner
+            """
+            try:
+                new_user.role = Role.objects.get(
+                    name=Role.SHOP_OWNER
+                )
+            except Role.DoesNotExist:
+                new_user.role = None
+
             new_user.save()
             return new_user
 

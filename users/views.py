@@ -22,7 +22,7 @@ class RegistrationApi(ViewSet):
             """
             Register a new user
             """
-            user_serializer.save(is_active=True)
+            user_serializer.save()
             return HttpUtil.success_response(
                 "user created successfully.",
                 {},

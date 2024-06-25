@@ -4,3 +4,4 @@ db.sqlite3
 migrations
 static
 __pycache__
+/__pycache__/
