@@ -46,7 +46,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"phone\": \"01781568145\",\n    \"password\": \"12345\"\n}",
+							"raw": "{\n    \"phone\": \"01816382390\",\n    \"password\": \"12345\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -110,7 +110,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"liter\"\n}",
+							"raw": "{\n    \"name\": \"dozons\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -139,7 +139,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/config/uom/5027f4ed72124b7b976724a60758d31a/",
+							"raw": "{{base_url}}/api/v1/config/uom/78038df92669431b8d76c594963586b1/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -148,7 +148,7 @@
 								"v1",
 								"config",
 								"uom",
-								"5027f4ed72124b7b976724a60758d31a",
+								"78038df92669431b8d76c594963586b1",
 								""
 							]
 						}
@@ -162,7 +162,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"liters\"\n}",
+							"raw": "{\n    \"name\": \"liter\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -170,7 +170,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/config/uom/5027f4ed72124b7b976724a60758d31a/",
+							"raw": "{{base_url}}/api/v1/config/uom/78038df92669431b8d76c594963586b1/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -179,7 +179,7 @@
 								"v1",
 								"config",
 								"uom",
-								"5027f4ed72124b7b976724a60758d31a",
+								"78038df92669431b8d76c594963586b1",
 								""
 							]
 						}
@@ -192,7 +192,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/config/uom/5027f4ed72124b7b976724a60758d31a/",
+							"raw": "{{base_url}}/api/v1/config/uom/78038df92669431b8d76c594963586b1/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -201,7 +201,7 @@
 								"v1",
 								"config",
 								"uom",
-								"5027f4ed72124b7b976724a60758d31a",
+								"78038df92669431b8d76c594963586b1",
 								""
 							]
 						}
@@ -300,7 +300,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/shop/c434972bb67e4a1381b60c38f2816096/",
+							"raw": "{{base_url}}/api/v1/shop/f1d2a1f858a34f158bce9112ce6d6a3d",
 							"host": [
 								"{{base_url}}"
 							],
@@ -308,8 +308,7 @@
 								"api",
 								"v1",
 								"shop",
-								"c434972bb67e4a1381b60c38f2816096",
-								""
+								"f1d2a1f858a34f158bce9112ce6d6a3d"
 							]
 						}
 					},
@@ -458,7 +457,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/category/6ab2605e7876445a8724dfb5724463b0",
+							"raw": "{{base_url}}/api/v1/category/f2757aa7b5964bda958f26922fc16278",
 							"host": [
 								"{{base_url}}"
 							],
@@ -466,7 +465,7 @@
 								"api",
 								"v1",
 								"category",
-								"6ab2605e7876445a8724dfb5724463b0"
+								"f2757aa7b5964bda958f26922fc16278"
 							]
 						}
 					},
@@ -487,7 +486,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/category/6ab2605e7876445a8724dfb5724463b0/",
+							"raw": "{{base_url}}/api/v1/category/f2757aa7b5964bda958f26922fc16278/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -495,7 +494,7 @@
 								"api",
 								"v1",
 								"category",
-								"6ab2605e7876445a8724dfb5724463b0",
+								"f2757aa7b5964bda958f26922fc16278",
 								""
 							]
 						}
@@ -508,7 +507,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/category/6ab2605e7876445a8724dfb5724463b0/",
+							"raw": "{{base_url}}/api/v1/category/f2757aa7b5964bda958f26922fc16278/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -516,7 +515,7 @@
 								"api",
 								"v1",
 								"category",
-								"6ab2605e7876445a8724dfb5724463b0",
+								"f2757aa7b5964bda958f26922fc16278",
 								""
 							]
 						}
@@ -592,7 +591,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"shop_guid\": \"c434972bb67e4a1381b60c38f2816096\",\n    \"name\": \"soyabin oil\"\n}",
+							"raw": "{\n    \"shop_guid\": \"c434972bb67e4a1381b60c38f2816096\",\n    \"name\": \"soyabin tel\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -620,7 +619,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/inventory/ab64f94fd5c841c9b0c15bae7cbe56f3",
+							"raw": "{{base_url}}/api/v1/inventory/c27ae4fc50704c57a871ec09a674148f",
 							"host": [
 								"{{base_url}}"
 							],
@@ -628,7 +627,7 @@
 								"api",
 								"v1",
 								"inventory",
-								"ab64f94fd5c841c9b0c15bae7cbe56f3"
+								"c27ae4fc50704c57a871ec09a674148f"
 							]
 						}
 					},
@@ -641,7 +640,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"shorisha oil\"\n}",
+							"raw": "{\n    \"total_stock\": 15\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -649,7 +648,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/inventory/ab64f94fd5c841c9b0c15bae7cbe56f3/",
+							"raw": "{{base_url}}/api/v1/inventory/c27ae4fc50704c57a871ec09a674148f/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -657,7 +656,7 @@
 								"api",
 								"v1",
 								"inventory",
-								"ab64f94fd5c841c9b0c15bae7cbe56f3",
+								"c27ae4fc50704c57a871ec09a674148f",
 								""
 							]
 						}
@@ -670,7 +669,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/inventory/ab64f94fd5c841c9b0c15bae7cbe56f3/",
+							"raw": "{{base_url}}/api/v1/inventory/c27ae4fc50704c57a871ec09a674148f/",
 							"host": [
 								"{{base_url}}"
 							],
@@ -678,8 +677,144 @@
 								"api",
 								"v1",
 								"inventory",
-								"ab64f94fd5c841c9b0c15bae7cbe56f3",
+								"c27ae4fc50704c57a871ec09a674148f",
 								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stock in",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"total_stock\": 35\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/inventory/stock-entry/5781d77b1055461c8a528d57e3063c3d/?shop_guid=c434972bb67e4a1381b60c38f2816096",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"inventory",
+								"stock-entry",
+								"5781d77b1055461c8a528d57e3063c3d",
+								""
+							],
+							"query": [
+								{
+									"key": "shop_guid",
+									"value": "c434972bb67e4a1381b60c38f2816096"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stock out",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"total_stock\": 8\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/inventory/stock-out/5781d77b1055461c8a528d57e3063c3d/?shop_guid=c434972bb67e4a1381b60c38f2816096",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"inventory",
+								"stock-out",
+								"5781d77b1055461c8a528d57e3063c3d",
+								""
+							],
+							"query": [
+								{
+									"key": "shop_guid",
+									"value": "c434972bb67e4a1381b60c38f2816096"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{shop_owner_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "sale",
+			"item": [
+				{
+					"name": "sale list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/sale?shop_guid=f1d2a1f858a34f158bce9112ce6d6a3d",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sale"
+							],
+							"query": [
+								{
+									"key": "shop_guid",
+									"value": "f1d2a1f858a34f158bce9112ce6d6a3d"
+								}
 							]
 						}
 					},
