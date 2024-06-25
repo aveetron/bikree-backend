@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from users.abstract_serializers import BikreeBaseWithUserSerializer
 from users.serializers import UserSerializer
-from .models import Shop, Category, Inventory
+from .models import Shop, Category, Inventory, Sale, SaleDetail
 
 
 class ShopSerializer(BikreeBaseWithUserSerializer):
@@ -85,3 +85,47 @@ class InventorySerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation.pop('shop', None)  # Remove the 'shop' field from the representation
         return representation
+
+
+class SaleDetailSerializer(serializers.ModelSerializer):
+    guid = serializers.CharField(required=False, source="guid.hex")
+    inventory = serializers.SerializerMethodField(
+        read_only=True
+    )
+
+    class Meta:
+        model = SaleDetail
+        exclude = ["id", "sale", "created_at", "updated_at", "created_by", "updated_by"]
+
+    def get_inventory(self, obj: SaleDetail) -> Dict[str, any]:
+        return {
+            "name": obj.inventory.name if obj.inventory else None,
+            "description": obj.inventory.description if obj.inventory else None,
+            "position": obj.inventory.position if obj.inventory else None,
+            "floor": obj.inventory.floor if obj.inventory else None,
+            "rack": obj.inventory.rack if obj.inventory else None
+        }
+
+
+class SaleSerializer(serializers.ModelSerializer):
+    guid = serializers.CharField(required=False, source="guid.hex")
+    shop = serializers.SerializerMethodField(read_only=True)
+    details = SaleDetailSerializer(many=True, read_only=True)
+    created_by = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Sale
+        exclude = ["id"]
+
+    def get_shop(self, obj: Sale) -> Dict[str, any]:
+        return {
+            "guid": obj.shop.guid.hex if obj.shop else None,
+            "name": obj.shop.name if obj.shop else None
+        }
+
+    def get_created_by(self, obj: Sale) -> Dict[str, any]:
+        return {
+            "guid": obj.created_by.guid.hex if obj.created_by else None,
+            "name": f"{obj.created_by.first_name} {obj.created_by.last_name}" if obj.created_by else None,
+            "role": obj.created_by.role.name if obj.created_by.role else None
+        }

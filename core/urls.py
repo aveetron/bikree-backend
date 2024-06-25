@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import (
 
 from core.routes.config import config_router
 from core.routes.inventory import inventory_router
+from core.routes.sale import sale_router
 from core.routes.shop import shop_router
 from core.routes.users import users_router
 from core.routes.category import category_router
@@ -21,5 +22,6 @@ urlpatterns = [
     path('api/v1/shop/', include(shop_router.urls)),
     path('api/v1/category/', include(category_router.urls)),
     path('api/v1/inventory/', include(inventory_router.urls)),
+    path('api/v1/sale/', include(sale_router.urls)),
 ]
 

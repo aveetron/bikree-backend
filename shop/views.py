@@ -7,8 +7,9 @@ from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
 from core.permissions import IsShopOwner, IsShopManager, IsShopEmployee
-from shop.models import Shop, Category, Inventory
-from shop.serializers import ShopSerializer, CategorySerializer, InventorySerializer
+from shop.models import Shop, Category, Inventory, Sale
+from shop.serializers import ShopSerializer, CategorySerializer, InventorySerializer, SaleSerializer, \
+    SaleDetailSerializer
 
 
 class ShopApi(ViewSet):
@@ -412,3 +413,28 @@ class StockOutApi(ViewSet):
             return HttpUtil.error_response(
                 message="inventory item not found!"
             )
+
+
+class SaleApi(ViewSet):
+    permission_classes = [IsShopOwner | IsShopEmployee | IsShopManager]
+    sale_serializer_class = SaleSerializer
+    sale_detail_serializer = SaleDetailSerializer
+    lookup_field = "guid"
+
+    def list(self, request: Request) -> Response:
+        shop_guid = request.query_params.get("shop_guid", None)
+        if not shop_guid:
+            return HttpUtil.error_response(
+                message="shop missing"
+            )
+
+        sales = Sale.objects.filter(
+            shop__guid=shop_guid,
+            status=True
+        )
+        sale_serializer = self.sale_serializer_class(
+            sales, many=True
+        )
+        return HttpUtil.success_response(
+            data=sale_serializer.data
+        )
