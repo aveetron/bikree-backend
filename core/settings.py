@@ -10,20 +10,28 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 CORS_ORIGIN_ALLOW_ALL = True
 
-INSTALLED_APPS = [
+BUILDIN_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+THIRED_PARTY_APSS = [
     'rest_framework',
-    'users',
     'rest_framework_simplejwt',
-    'config',
-    'shop',
     'corsheaders',
 ]
+
+PROJECT_APPS = [
+    'users',
+    'config',
+    'shop',
+]
+
+INSTALLED_APPS = BUILDIN_APPS + THIRED_PARTY_APSS + PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
