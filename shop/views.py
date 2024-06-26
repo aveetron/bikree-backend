@@ -438,3 +438,36 @@ class SaleApi(ViewSet):
         return HttpUtil.success_response(
             data=sale_serializer.data
         )
+
+    def create(self, request: Request) -> Response:
+        payload = request.data
+        sale_serializer = self.sale_serializer_class(
+            data=payload
+        )
+        if not sale_serializer.is_valid():
+            return HttpUtil.error_response(
+                message=sale_serializer.errors
+            )
+        sale_serializer.save()
+        return HttpUtil.success_response(
+            message="sale created",
+            code=status.HTTP_201_CREATED
+        )
+
+    def retrieve(self, request: Request, guid: str) -> Response:
+        try:
+            sale = Sale.objects.get(
+                guid=guid,
+                status=True
+            )
+        except Sale.DoesNotExist:
+            return HttpUtil.error_response(
+                message="sale doesn't exists!"
+            )
+
+        sale_serializer = self.sale_serializer_class(
+            sale, many=False
+        )
+        return HttpUtil.success_response(
+            data=sale_serializer.data
+        )
