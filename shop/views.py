@@ -7,7 +7,7 @@ from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
 from core.permissions import IsShopOwner, IsShopManager, IsShopEmployee
-from shop.models import Shop, Category, Inventory, Sale
+from shop.models import Shop, Category, Inventory, Sale, SaleDetail
 from shop.serializers import ShopSerializer, CategorySerializer, InventorySerializer, SaleSerializer, \
     SaleDetailSerializer
 
@@ -470,4 +470,34 @@ class SaleApi(ViewSet):
         )
         return HttpUtil.success_response(
             data=sale_serializer.data
+        )
+
+    def delete(self, request: Request, guid: str) -> Response:
+        try:
+            sale = Sale.objects.get(
+                guid=guid,
+                status=True
+            )
+        except Sale.DoesNotExist:
+            return HttpUtil.error_response(
+                message="Sale not found!"
+            )
+
+        """
+            1. from sale details, adjust the quantity to inventory
+            2. delete sale details
+            3. delete sale
+        """
+        for sale_detail in SaleDetail.objects.filter(sale=sale):
+            try:
+                inventory = Inventory.objects.get(id=sale_detail.inventory_id)
+                inventory.total_stock = inventory.total_stock + sale_detail.qty
+                inventory.save()
+            except Inventory.DoesNotExist:
+                pass
+
+        sale_detail.delete()
+        sale.delete()
+        return HttpUtil.success_response(
+            message="sale deleted and stock rebased."
         )
