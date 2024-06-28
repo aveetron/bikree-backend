@@ -1,4 +1,5 @@
 import decimal
+from typing import Union, Any
 
 from rest_framework import status
 from rest_framework.request import Request
@@ -508,23 +509,42 @@ class CustomerApi(ViewSet):
     serializer_class = CustomerSerializer
     lookup_field = "guid"
 
-    def check_shop(self, shop_guid: str) -> Response:
+    def check_shop(self, shop_guid: Union[str, None]) -> Union[Shop, None]:
+        if shop_guid is None:
+            return None
+
         try:
             shop = Shop.objects.get(
                 guid=shop_guid,
                 status=True
             )
-            return shop
         except Shop.DoesNotExist:
-            return HttpUtil.error_response(
-                message="Shop not defined"
-            )
+            return None
 
-    def check_customer(self, customer_):
+        return shop
+
+    def check_customer(self, shop, customer_guid):
+        if customer_guid is None:
+            return None
+
+        try:
+            customer = Customer.objects.get(
+                shop=shop,
+                guid=customer_guid,
+                status=True
+            )
+        except Customer.DoesNotExist:
+            return None
+
+        return customer
 
     def list(self, request: Request) -> Response:
         shop_guid = request.query_params.get("shop_guid", None)
         shop = self.check_shop(shop_guid)
+        if shop is None:
+            return HttpUtil.error_response(
+                message="Shop Not Defined!"
+            )
 
         customers = Customer.objects.filter(
             shop__guid=shop.guid,
@@ -539,6 +559,12 @@ class CustomerApi(ViewSet):
 
     def create(self, request: Request) -> Response:
         payload = request.data
+        shop_guid = request.query_params.get("shop_guid", None)
+        shop = self.check_shop(shop_guid)
+        if shop is None:
+            return HttpUtil.error_response(
+                message="Shop Not Defined!"
+            )
         customer_serializer = self.serializer_class(
             data=payload
         )
@@ -548,7 +574,9 @@ class CustomerApi(ViewSet):
             )
 
         customer_serializer.save(
-            status=True
+            shop=shop,
+            status=True,
+            created_by=request.user
         )
         return HttpUtil.success_response(
             message="Customer Created",
@@ -558,15 +586,10 @@ class CustomerApi(ViewSet):
     def get(self, request: Request, guid: str) -> Response:
         shop_guid = request.query_params.get("shop_guid", None)
         shop = self.check_shop(shop_guid)
-        try:
-            customer = Customer.objects.get(
-                shop=shop,
-                guid=guid,
-                status=True
-            )
-        except Customer.DoesNotExist:
+        customer = self.check_customer(shop, guid)
+        if (shop and customer) is None:
             return HttpUtil.error_response(
-                message="Customer Not Found!"
+                message="Shop Not Defined!"
             )
         customer_serializer = self.serializer_class(
             customer, many=False
@@ -574,6 +597,43 @@ class CustomerApi(ViewSet):
         return HttpUtil.success_response(
             data=customer_serializer.data
         )
+
+    def update(self, request: Request, guid: str) -> Response:
+        shop_guid = request.query_params.get("shop_guid", None)
+        shop = self.check_shop(shop_guid)
+        customer = self.check_customer(shop, guid)
+        if (shop and customer) is None:
+            return HttpUtil.error_response(
+                message="Shop Not Defined!"
+            )
+
+        customer_serializer = self.serializer_class(
+            customer, data=request.data, partial=True
+        )
+        if not customer_serializer.is_valid():
+            return HttpUtil.error_response(
+                message=customer_serializer.errors
+            )
+
+        customer_serializer.save()
+        return HttpUtil.success_response(
+            data=customer_serializer.data,
+            message="Customer Updated"
+        )
+
+    def delete(self, request: Request, guid: str) -> Response:
+        shop_guid = request.query_params.get("shop_guid", None)
+        shop = self.check_shop(shop_guid)
+        customer = self.check_customer(shop, guid)
+        if (shop and customer) is None:
+            return HttpUtil.error_response(
+                message="Shop Not Defined!"
+            )
+        customer.delete()
+        return HttpUtil.success_response(
+            message="Customer Deleted"
+        )
+
 
 
 

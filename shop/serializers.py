@@ -106,6 +106,9 @@ class InventorySerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    guid = serializers.CharField(required=False,
+                                 source="guid.hex",
+                                 read_only=True)
     shop = serializers.SerializerMethodField(read_only=True)
     created_by = serializers.SerializerMethodField(read_only=True)
 
