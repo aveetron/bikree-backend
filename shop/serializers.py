@@ -24,6 +24,15 @@ class SaleSerializerHelper:
             "role": self.obj.role.name if self.obj.role else None
         }
 
+    def get_inventory(self) -> Dict[str, any]:
+        return {
+            "name": self.obj.name if self.obj else None,
+            "description": self.obj.description if self.obj else None,
+            "position": self.obj.position if self.obj else None,
+            "floor": self.obj.floor if self.obj else None,
+            "rack": self.obj.rack if self.obj else None
+        }
+
 
 class ShopSerializer(BikreeBaseWithUserSerializer):
     name = serializers.CharField(required=False, allow_null=False)
@@ -136,13 +145,8 @@ class SaleDetailSerializer(serializers.ModelSerializer):
         exclude = ["id", "sale", "created_at", "updated_at", "created_by", "updated_by"]
 
     def get_inventory(self, obj: SaleDetail) -> Dict[str, any]:
-        return {
-            "name": obj.inventory.name if obj.inventory else None,
-            "description": obj.inventory.description if obj.inventory else None,
-            "position": obj.inventory.position if obj.inventory else None,
-            "floor": obj.inventory.floor if obj.inventory else None,
-            "rack": obj.inventory.rack if obj.inventory else None
-        }
+        helper = SaleSerializerHelper(obj.inventory)
+        return helper.get_inventory()
 
 
 class SaleSerializer(serializers.ModelSerializer):
