@@ -635,17 +635,30 @@ class CustomerApi(ViewSet):
         )
 
 
+class PayableSaleApi(ViewSet):
+    permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
+    serializer_class = SaleSerializer
 
+    def list(self, request: Request) -> Response:
+        shop_guid = request.query_params.get("shop_guid", None)
+        filter_query = {
+            "start_date": request.query_params.get("start_date", None),
+            "end_date": request.query_params.get("end_date", None)
+        }
+        if shop_guid is None:
+            return HttpUtil.error_response(
+                message="Shop Not Found!"
+            )
 
-
-
-
-
-
-
-
-
-
-
-
-
+        payable_sales = Sale.objects.filter(
+            shop__guid=shop_guid,
+            status=True,
+            is_paid=False,
+            **filter_query
+        )
+        payable_serializer = self.serializer_class(
+            payable_sales, many=True
+        )
+        return HttpUtil.success_response(
+            data=payable_serializer.data
+        )
