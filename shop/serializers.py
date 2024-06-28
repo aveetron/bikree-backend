@@ -8,20 +8,20 @@ from .models import Shop, Category, Inventory, Sale, SaleDetail, Customer
 
 
 class SaleSerializerHelper:
-    def __init__(self, sale_obj: Sale):
-        self.sale_obj = sale_obj
+    def __init__(self, obj: Any):
+        self.obj = obj
 
     def get_shop(self) -> Dict[str, any]:
         return {
-            "guid": self.sale_obj.shop.guid.hex if self.sale_obj.shop else None,
-            "name": self.sale_obj.shop.name if self.sale_obj.shop else None
+            "guid": self.obj.guid.hex if self.obj else None,
+            "name": self.obj.name if self.obj else None
         }
 
     def get_created_by(self) -> Dict[str, any]:
         return {
-            "guid": self.sale_obj.created_by.guid.hex if self.sale_obj.created_by else None,
-            "name": f"{self.sale_obj.created_by.first_name} {self.sale_obj.created_by.last_name}" if self.sale_obj.created_by else None,
-            "role": self.sale_obj.created_by.role.name if self.sale_obj.created_by.role else None
+            "guid": self.obj.guid.hex if self.obj else None,
+            "name": f"{self.obj.first_name} {self.obj.last_name}" if self.obj else None,
+            "role": self.obj.role.name if self.obj.role else None
         }
 
 
@@ -116,18 +116,13 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         exclude = ["id"]
 
-    def get_shop(self, obj: Sale) -> Dict[str, any]:
-        return {
-            "guid": obj.shop.guid.hex if obj.shop else None,
-            "name": obj.shop.name if obj.shop else None
-        }
+    def get_shop(self, obj: Customer) -> Dict[str, any]:
+        helper = SaleSerializerHelper(obj.shop)
+        return helper.get_shop()
 
     def get_created_by(self, obj: Sale) -> Dict[str, any]:
-        return {
-            "guid": obj.created_by.guid.hex if obj.created_by else None,
-            "name": f"{obj.created_by.first_name} {obj.created_by.last_name}" if obj.created_by else None,
-            "role": obj.created_by.role.name if obj.created_by.role else None
-        }
+        helper = SaleSerializerHelper(obj.created_by)
+        return helper.get_created_by()
 
 
 class SaleDetailSerializer(serializers.ModelSerializer):
@@ -161,14 +156,9 @@ class SaleSerializer(serializers.ModelSerializer):
         exclude = ["id"]
 
     def get_shop(self, obj: Sale) -> Dict[str, any]:
-        return {
-            "guid": obj.shop.guid.hex if obj.shop else None,
-            "name": obj.shop.name if obj.shop else None
-        }
+        helper = SaleSerializerHelper(obj.shop)
+        return helper.get_shop()
 
     def get_created_by(self, obj: Sale) -> Dict[str, any]:
-        return {
-            "guid": obj.created_by.guid.hex if obj.created_by else None,
-            "name": f"{obj.created_by.first_name} {obj.created_by.last_name}" if obj.created_by else None,
-            "role": obj.created_by.role.name if obj.created_by.role else None
-        }
+        helper = SaleSerializerHelper(obj.created_by)
+        return helper.get_created_by()
