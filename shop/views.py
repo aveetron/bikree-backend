@@ -7,9 +7,9 @@ from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
 from core.permissions import IsShopOwner, IsShopManager, IsShopEmployee
-from shop.models import Shop, Category, Inventory, Sale, SaleDetail
+from shop.models import Shop, Category, Inventory, Sale, SaleDetail, Customer
 from shop.serializers import ShopSerializer, CategorySerializer, InventorySerializer, SaleSerializer, \
-    SaleDetailSerializer
+    SaleDetailSerializer, CustomerSerializer
 
 
 class ShopApi(ViewSet):
@@ -501,3 +501,91 @@ class SaleApi(ViewSet):
         return HttpUtil.success_response(
             message="sale deleted and stock rebased."
         )
+
+
+class CustomerApi(ViewSet):
+    permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
+    serializer_class = CustomerSerializer
+    lookup_field = "guid"
+
+    def check_shop(self, shop_guid: str) -> Response:
+        try:
+            shop = Shop.objects.get(
+                guid=shop_guid,
+                status=True
+            )
+            return shop
+        except Shop.DoesNotExist:
+            return HttpUtil.error_response(
+                message="Shop not defined"
+            )
+
+    def check_customer(self, customer_):
+
+    def list(self, request: Request) -> Response:
+        shop_guid = request.query_params.get("shop_guid", None)
+        shop = self.check_shop(shop_guid)
+
+        customers = Customer.objects.filter(
+            shop__guid=shop.guid,
+            status=True
+        )
+        customer_serializer = self.serializer_class(
+            customers, many=True
+        )
+        return HttpUtil.success_response(
+            data=customer_serializer.data
+        )
+
+    def create(self, request: Request) -> Response:
+        payload = request.data
+        customer_serializer = self.serializer_class(
+            data=payload
+        )
+        if not customer_serializer.is_valid():
+            return HttpUtil.error_response(
+                message=customer_serializer.errors
+            )
+
+        customer_serializer.save(
+            status=True
+        )
+        return HttpUtil.success_response(
+            message="Customer Created",
+            code=status.HTTP_201_CREATED
+        )
+
+    def get(self, request: Request, guid: str) -> Response:
+        shop_guid = request.query_params.get("shop_guid", None)
+        shop = self.check_shop(shop_guid)
+        try:
+            customer = Customer.objects.get(
+                shop=shop,
+                guid=guid,
+                status=True
+            )
+        except Customer.DoesNotExist:
+            return HttpUtil.error_response(
+                message="Customer Not Found!"
+            )
+        customer_serializer = self.serializer_class(
+            customer, many=False
+        )
+        return HttpUtil.success_response(
+            data=customer_serializer.data
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

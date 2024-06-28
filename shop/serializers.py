@@ -4,7 +4,25 @@ from rest_framework import serializers
 
 from users.abstract_serializers import BikreeBaseWithUserSerializer
 from users.serializers import UserSerializer
-from .models import Shop, Category, Inventory, Sale, SaleDetail
+from .models import Shop, Category, Inventory, Sale, SaleDetail, Customer
+
+
+class SaleSerializerHelper:
+    def __init__(self, sale_obj: Sale):
+        self.sale_obj = sale_obj
+
+    def get_shop(self) -> Dict[str, any]:
+        return {
+            "guid": self.sale_obj.shop.guid.hex if self.sale_obj.shop else None,
+            "name": self.sale_obj.shop.name if self.sale_obj.shop else None
+        }
+
+    def get_created_by(self) -> Dict[str, any]:
+        return {
+            "guid": self.sale_obj.created_by.guid.hex if self.sale_obj.created_by else None,
+            "name": f"{self.sale_obj.created_by.first_name} {self.sale_obj.created_by.last_name}" if self.sale_obj.created_by else None,
+            "role": self.sale_obj.created_by.role.name if self.sale_obj.created_by.role else None
+        }
 
 
 class ShopSerializer(BikreeBaseWithUserSerializer):
@@ -85,6 +103,28 @@ class InventorySerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation.pop('shop', None)  # Remove the 'shop' field from the representation
         return representation
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    shop = serializers.SerializerMethodField(read_only=True)
+    created_by = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Customer
+        exclude = ["id"]
+
+    def get_shop(self, obj: Sale) -> Dict[str, any]:
+        return {
+            "guid": obj.shop.guid.hex if obj.shop else None,
+            "name": obj.shop.name if obj.shop else None
+        }
+
+    def get_created_by(self, obj: Sale) -> Dict[str, any]:
+        return {
+            "guid": obj.created_by.guid.hex if obj.created_by else None,
+            "name": f"{obj.created_by.first_name} {obj.created_by.last_name}" if obj.created_by else None,
+            "role": obj.created_by.role.name if obj.created_by.role else None
+        }
 
 
 class SaleDetailSerializer(serializers.ModelSerializer):
