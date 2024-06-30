@@ -15,9 +15,7 @@ class RegistrationApi(ViewSet):
         payload = request.data
         if not payload["phone"]:
             return HttpUtil.error_response("Phone is required")
-        user_serializer = self.serializer_class(
-            data=payload
-        )
+        user_serializer = self.serializer_class(data=payload)
         if user_serializer.is_valid():
             """
             Register a new user

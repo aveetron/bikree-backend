@@ -3,7 +3,11 @@ from typing import Dict, Any
 from rest_framework import serializers
 
 from core.base_abstract_serializers import BikreeBaseModelSerializer
-from core.serializer_helpers import UserSerializerHelper, ShopSerializerHelper, InventorySerializerHelper
+from core.serializer_helpers import (
+    UserSerializerHelper,
+    ShopSerializerHelper,
+    InventorySerializerHelper,
+)
 from .models import Shop, Category, Inventory, Sale, SaleDetail, Customer
 
 
@@ -12,7 +16,7 @@ class ShopSerializer(BikreeBaseModelSerializer):
 
     class Meta:
         model = Shop
-        exclude = ['id', 'created_by', 'updated_by']
+        exclude = ["id", "created_by", "updated_by"]
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         name = attrs.get("name")
@@ -26,7 +30,7 @@ class ShopSerializer(BikreeBaseModelSerializer):
 
         if not owner:
             # If owner is not passed in the data, use request.user
-            owner = self.context['user']
+            owner = self.context["user"]
             attrs["owner"] = owner
 
         if name and owner:
@@ -49,17 +53,13 @@ class ShopSerializer(BikreeBaseModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    uid = serializers.CharField(required=False,
-                                source="uid.hex",
-                                read_only=True)
+    uid = serializers.CharField(required=False, source="uid.hex", read_only=True)
 
     def validate(self, attrs: Dict[str, Any]) -> dict[str, Any]:
         name = attrs.get("name").lower()
-        user = self.context['user']
+        user = self.context["user"]
         if Category.objects.filter(
-            name=name,
-            created_by=user,
-            deleted_at__isnull=True
+            name=name, created_by=user, deleted_at__isnull=True
         ).exists():
             raise serializers.ValidationError("Name Already Exists!")
 
@@ -69,21 +69,17 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = [
-            "uid", "name", "deleted_at"
-        ]
+        fields = ["uid", "name", "deleted_at"]
 
 
 class InventorySerializer(serializers.ModelSerializer):
-    uid = serializers.CharField(required=False,
-                                source="uid.hex",
-                                read_only=True)
-    shop_uid = serializers.CharField(required=False,
-                                     read_only=True,
-                                     source="shop.uid.hex")
-    shop_name = serializers.CharField(required=False,
-                                      read_only=True,
-                                      source="shop.name")
+    uid = serializers.CharField(required=False, source="uid.hex", read_only=True)
+    shop_uid = serializers.CharField(
+        required=False, read_only=True, source="shop.uid.hex"
+    )
+    shop_name = serializers.CharField(
+        required=False, read_only=True, source="shop.name"
+    )
 
     class Meta:
         model = Inventory
@@ -91,14 +87,14 @@ class InventorySerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance: Inventory) -> Dict[str, Any]:
         representation = super().to_representation(instance)
-        representation.pop('shop', None)  # Remove the 'shop' field from the representation
+        representation.pop(
+            "shop", None
+        )  # Remove the 'shop' field from the representation
         return representation
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-    uid = serializers.CharField(required=False,
-                                source="uid.hex",
-                                read_only=True)
+    uid = serializers.CharField(required=False, source="uid.hex", read_only=True)
     shop = serializers.SerializerMethodField(read_only=True)
     created_by = serializers.SerializerMethodField(read_only=True)
 
@@ -117,9 +113,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class SaleDetailSerializer(serializers.ModelSerializer):
     uid = serializers.CharField(required=False, source="uid.hex")
-    inventory = serializers.SerializerMethodField(
-        read_only=True
-    )
+    inventory = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = SaleDetail

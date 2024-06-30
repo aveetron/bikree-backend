@@ -11,9 +11,7 @@ class UomSerializer(BikreeBaseSerializer):
     name = serializers.CharField(required=True)
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
-        uom = Uom.objects.filter(
-            name=attrs.get("name")
-        ).exists()
+        uom = Uom.objects.filter(name=attrs.get("name")).exists()
         if uom:
             raise ValidationError(
                 "Unit of measurement already exists", code=status.HTTP_403_FORBIDDEN

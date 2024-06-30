@@ -48,10 +48,7 @@ class IsBusinessAnalyst(BaseUserPermission):
 class IsAdminOrBusinessAnalyst(BaseUserPermission):
 
     def get_role(self) -> list[str]:
-        return [
-            Role.ADMIN,
-            Role.BUSINESS_ANALYST
-        ]
+        return [Role.ADMIN, Role.BUSINESS_ANALYST]
 
 
 class IsShopOwner(BaseUserPermission):
@@ -75,25 +72,16 @@ class IsShopEmployee(BaseUserPermission):
 class IsShopOwnerOrManager(BaseUserPermission):
 
     def get_role(self) -> list[str]:
-        return [
-            Role.SHOP_OWNER,
-            Role.SHOP_MANAGER
-        ]
+        return [Role.SHOP_OWNER, Role.SHOP_MANAGER]
 
 
 class IsShopManagerOrEmployee(BaseUserPermission):
 
     def get_role(self) -> list[str]:
-        return [
-            Role.SHOP_MANAGER,
-            Role.SHOP_EMPLOYEE
-        ]
+        return [Role.SHOP_MANAGER, Role.SHOP_EMPLOYEE]
 
 
 class IsShopOwnerOrEmployee(BaseUserPermission):
 
     def get_role(self) -> list[str]:
-        return [
-            Role.SHOP_OWNER,
-            Role.SHOP_EMPLOYEE
-        ]
+        return [Role.SHOP_OWNER, Role.SHOP_EMPLOYEE]

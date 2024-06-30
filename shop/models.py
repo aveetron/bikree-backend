@@ -8,8 +8,9 @@ class Shop(BikreeBaseModelWithUser):
     name = models.CharField(max_length=50)
     address = models.TextField(null=True, blank=True)
     licence_no = models.TextField(null=True, blank=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE,
-                              related_name="store_owner")
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="store_owner"
+    )
 
     class Meta:
         ordering = ["-id"]
@@ -29,8 +30,7 @@ class Inventory(BikreeBaseModelWithUser):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    total_stock = models.DecimalField(max_digits=20, decimal_places=3,
-                                      default=0.00)
+    total_stock = models.DecimalField(max_digits=20, decimal_places=3, default=0.00)
     position = models.CharField(max_length=100, null=True, blank=True)
     floor = models.CharField(max_length=100, null=True, blank=True)
     rack = models.CharField(max_length=100, null=True, blank=True)
@@ -62,12 +62,10 @@ class Sale(BikreeBaseModelWithUser):
 
 
 class SaleDetail(BikreeBaseModelWithUser):
-    sale = models.ForeignKey(Sale, related_name='details', on_delete=models.CASCADE)
+    sale = models.ForeignKey(Sale, related_name="details", on_delete=models.CASCADE)
     inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE)
-    qty = models.DecimalField(max_digits=20, decimal_places=3,
-                              default=0.00)
-    price = models.DecimalField(max_digits=20, decimal_places=3,
-                                default=0.00)
+    qty = models.DecimalField(max_digits=20, decimal_places=3, default=0.00)
+    price = models.DecimalField(max_digits=20, decimal_places=3, default=0.00)
 
     def __str__(self):
         return f"{self.sale.no} {self.inventory.name}"

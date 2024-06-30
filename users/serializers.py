@@ -20,9 +20,7 @@ class UserSerializer(BikreeBaseSerializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
-        phone = User.objects.filter(
-            phone=attrs.get("phone")
-        ).exists()
+        phone = User.objects.filter(phone=attrs.get("phone")).exists()
         if phone:
             raise ValidationError(
                 "User with phone exists", code=status.HTTP_403_FORBIDDEN
@@ -50,9 +48,7 @@ class UserSerializer(BikreeBaseSerializer):
                 by default the role of the user will be shop owner
             """
             try:
-                new_user.role = Role.objects.get(
-                    name=Role.SHOP_OWNER
-                )
+                new_user.role = Role.objects.get(name=Role.SHOP_OWNER)
             except Role.DoesNotExist:
                 new_user.role = None
 

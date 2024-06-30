@@ -11,9 +11,7 @@ class Role(BikreeBaseModel):
     SHOP_OWNER = "Shop Owner"
     SHOP_EMPLOYEE = "Shop Employee"
     SHOP_MANAGER = "Shop Manager"
-    name = models.CharField(
-        max_length=30
-    )
+    name = models.CharField(max_length=30)
 
     def __str__(self) -> str:
         return f"uid: {self.uid} name: {self.name}"
@@ -22,11 +20,7 @@ class Role(BikreeBaseModel):
 class User(AbstractUser, BikreeBaseModel):
     username = None
     phone = models.CharField(unique=True, max_length=30)
-    role = models.ForeignKey(
-        Role,
-        on_delete=models.CASCADE,
-        null=True, blank=True
-    )
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True, blank=True)
 
     USERNAME_FIELD = "phone"
     REQUIRED_FIELDS = []
