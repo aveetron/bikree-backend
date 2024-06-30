@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.base_abstract_models import BikreeBaseModel
+
 from .models import User
 
 

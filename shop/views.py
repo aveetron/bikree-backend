@@ -7,16 +7,16 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
-from core.permissions import IsShopOwner, IsShopManager, IsShopEmployee
+from core.permissions import IsShopEmployee, IsShopManager, IsShopOwner
 from core.utils import soft_delete
-from shop.models import Shop, Category, Inventory, Sale, SaleDetail, Customer
+from shop.models import Category, Customer, Inventory, Sale, SaleDetail, Shop
 from shop.serializers import (
-    ShopSerializer,
     CategorySerializer,
-    InventorySerializer,
-    SaleSerializer,
-    SaleDetailSerializer,
     CustomerSerializer,
+    InventorySerializer,
+    SaleDetailSerializer,
+    SaleSerializer,
+    ShopSerializer,
 )
 
 

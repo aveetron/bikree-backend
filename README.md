@@ -4,6 +4,10 @@
 * implemented ruff, 10-100x faster than existing linters (like Flake8) and formatters (like Black) (
     https://docs.astral.sh/ruff/
   )
+* implemented isort, isort is a Python utility / library to sort imports alphabetically and automatically separate into sections and by type. (
+    https://pypi.org/project/isort/
+  )
+
 
   
 Not using Now

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from shop.models import Shop, Category, Inventory, Sale, SaleDetail
+from shop.models import Category, Inventory, Sale, SaleDetail, Shop
 
 admin.site.register(Shop)
 admin.site.register(Category)

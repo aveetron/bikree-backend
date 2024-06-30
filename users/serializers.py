@@ -1,11 +1,12 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from rest_framework import serializers, status
 
 from core.base_abstract_serializers import BikreeBaseSerializer
-from .models import User, Role
+
+from .models import Role, User
 
 
 class UserSerializer(BikreeBaseSerializer):

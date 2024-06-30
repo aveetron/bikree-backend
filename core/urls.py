@@ -1,18 +1,18 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
 
+from core.routes.category import category_router
 from core.routes.config import config_router
 from core.routes.customer import customer_router
 from core.routes.inventory import inventory_router
 from core.routes.sale import sale_router
 from core.routes.shop import shop_router
 from core.routes.users import users_router
-from core.routes.category import category_router
 
 urlpatterns = [
     path("admin/", admin.site.urls),

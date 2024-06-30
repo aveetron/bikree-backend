@@ -1,10 +1,10 @@
 from abc import abstractmethod
-from typing import Union, List
+from typing import List, Union
 
 from rest_framework import permissions
 from rest_framework.request import Request
 
-from users.models import User, Role
+from users.models import Role, User
 
 
 class BaseUserPermission(permissions.BasePermission):
