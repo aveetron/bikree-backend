@@ -55,8 +55,8 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
-    "USER_ID_FIELD": "guid",
-    "USER_ID_CLAIM": "user_guid",
+    "USER_ID_FIELD": "uid",
+    "USER_ID_CLAIM": "user_uid",
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,

@@ -25,7 +25,7 @@ class UomApi(ViewSet):
         :param request: None
         :return: uoms
         """
-        uoms = Uom.objects.filter(status=True)
+        uoms = Uom.objects.filter(deleted_at__isnull=False)
         uom_serializer = self.serializer_class(
             uoms,
             many=True
@@ -42,9 +42,7 @@ class UomApi(ViewSet):
             return HttpUtil.error_response(
                 uom_serializer.errors
             )
-        uom_serializer.save(
-            status=True
-        )
+        uom_serializer.save()
         return HttpUtil.success_response(
             data=uom_serializer.data,
             code=status.HTTP_201_CREATED,

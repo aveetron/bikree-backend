@@ -16,7 +16,7 @@ class BikreeBaseModel(models.Model):
         auto_now=True
     )
     deleted_at = models.DateTimeField(
-        auto_now=True
+        null=True, blank=True
     )
 
     class Meta:

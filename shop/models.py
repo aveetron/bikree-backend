@@ -11,6 +11,9 @@ class Shop(BikreeBaseModelWithUser):
     owner = models.ForeignKey(User, on_delete=models.CASCADE,
                               related_name="store_owner")
 
+    class Meta:
+        ordering = ["-id"]
+
     def __str__(self) -> str:
         return f"uid: {self.uid} , name: {self.name}"
 

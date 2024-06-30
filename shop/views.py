@@ -1,5 +1,5 @@
 import decimal
-from typing import Union, Any
+from typing import Union
 
 from rest_framework import status
 from rest_framework.request import Request
@@ -8,6 +8,7 @@ from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
 from core.permissions import IsShopOwner, IsShopManager, IsShopEmployee
+from core.utils import soft_delete
 from shop.models import Shop, Category, Inventory, Sale, SaleDetail, Customer
 from shop.serializers import ShopSerializer, CategorySerializer, InventorySerializer, SaleSerializer, \
     SaleDetailSerializer, CustomerSerializer
@@ -21,8 +22,13 @@ class ShopApi(ViewSet):
     def list(self, request: Request) -> Response:
         shops = Shop.objects.filter(
             owner=request.user,
-            status=True
+            deleted_at__isnull=True
         )
+        if request.query_params.get("shop_name", None):
+            shops = shops.filter(
+                name__icontains=request.query_params.get("shop_name")
+            )
+
         shop_serializer = self.serializer_class(
             shops, many=True
         )
@@ -40,9 +46,7 @@ class ShopApi(ViewSet):
             return HttpUtil.error_response(
                 shop_serializer.errors
             )
-        shop_serializer.save(
-            owner=request.user
-        )
+        shop_serializer.save()
         return HttpUtil.success_response(
             data=shop_serializer.data,
             message="created",
@@ -53,9 +57,9 @@ class ShopApi(ViewSet):
         try:
             shop = Shop.objects.get(
                 uid=uid,
-                status=True
+                deleted_at__isnull=True
             )
-            if shop:
+            if not shop:
                 return HttpUtil.error_response(
                     message="shop not found!"
                 )
@@ -74,18 +78,18 @@ class ShopApi(ViewSet):
             shop = Shop.objects.get(
                 uid=uid,
                 owner=request.user,
-                status=True
+                deleted_at__isnull=True
             )
             shop_serializer = ShopSerializer(
                 shop, data=request.data,
-                context={"user": request.user}
+                context={"user": request.user},
+                partial=True
             )
             if not shop_serializer.is_valid():
                 return HttpUtil.error_response(
                     shop_serializer.errors
                 )
             shop_serializer.save()
-
             return HttpUtil.success_response(
                 data=shop_serializer.data
             )
@@ -99,9 +103,9 @@ class ShopApi(ViewSet):
             shop = Shop.objects.get(
                 uid=uid,
                 owner=request.user,
-                status=True
+                deleted_at__isnull=True
             )
-            shop.delete()
+            soft_delete(shop)
             return HttpUtil.success_response(
                 message="deleted"
             )
@@ -119,8 +123,13 @@ class CategoryApi(ViewSet):
     def list(self, request: Request) -> Response:
         categories = Category.objects.filter(
             created_by=request.user,
-            status=True
+            deleted_at__isnull=True
         )
+        if request.query_params.get("category_name", None):
+            categories = categories.filter(
+                name__icontains=request.query_params.get("category_name")
+            )
+
         category_serializer = self.serializer_class(
             categories, many=True
         )
@@ -130,41 +139,41 @@ class CategoryApi(ViewSet):
         )
 
     def create(self, request: Request) -> Response:
-        # if this category name exists
-        if Category.objects.filter(
-                created_by=request.user,
-                name=request.data["name"]
-        ).exists():
-            return HttpUtil.error_response(
-                message="name with this category already exists!"
+        try:
+            if Category.objects.get(
+                    created_by=request.user,
+                    name=request.data["name"]
+            ):
+                return HttpUtil.error_response(
+                    message="name with this category already exists!"
+                )
+        except Category.DoesNotExist:
+            category_serializer = self.serializer_class(
+                data=request.data,
+                context={"user": request.user}
             )
+            if not category_serializer.is_valid():
+                return HttpUtil.error_response(
+                    category_serializer.errors
+                )
 
-        category_serializer = self.serializer_class(
-            data=request.data
-        )
-        if not category_serializer.is_valid():
-            return HttpUtil.error_response(
-                category_serializer.errors
+            category_serializer.save(
+                created_by=request.user
             )
-
-        category_serializer.save(
-            created_by=request.user,
-            status=True
-        )
-        return HttpUtil.success_response(
-            data=category_serializer.data,
-            message="created",
-            code=status.HTTP_201_CREATED
-        )
+            return HttpUtil.success_response(
+                data=category_serializer.data,
+                message="created",
+                code=status.HTTP_201_CREATED
+            )
 
     def retrieve(self, request: Request, uid: str = None) -> Response:
         try:
             category = Category.objects.get(
                 uid=uid,
                 created_by=request.user,
-                status=True
+                deleted_at__isnull=True
             )
-            category_serializer = CategorySerializer(category)
+            category_serializer = self.serializer_class(category)
             return HttpUtil.success_response(
                 data=category_serializer.data
             )
@@ -178,10 +187,11 @@ class CategoryApi(ViewSet):
             category = Category.objects.get(
                 uid=uid,
                 created_by=request.user,
-                status=True
+                deleted_at__isnull=True
             )
-            category_serializer = CategorySerializer(
-                category, data=request.data
+            category_serializer = self.serializer_class(
+                category, data=request.data,
+                context={"user": request.user}, partial=True
             )
             if not category_serializer.is_valid():
                 return HttpUtil.error_response(
@@ -202,9 +212,9 @@ class CategoryApi(ViewSet):
             category = Category.objects.get(
                 uid=uid,
                 created_by=request.user,
-                status=True
+                deleted_at__isnull=True
             )
-            category.delete()
+            soft_delete(category)
             return HttpUtil.success_response(
                 message="deleted"
             )
@@ -223,7 +233,7 @@ class InventoryApi(ViewSet):
         shop_uid = request.query_params.get("shop_uid")
         inventories = Inventory.objects.filter(
             shop__uid=shop_uid,
-            status=True
+            deleted_at__isnull=True
         )
         shop_serializer = self.serializer_class(
             inventories,
@@ -244,7 +254,7 @@ class InventoryApi(ViewSet):
 
         if "shop_uid" in request.data:
             shop = Shop.objects.get(uid=request.data["shop_uid"],
-                                    status=True)
+                                    deleted_at__isnull=True)
             if shop:
                 request.data["shop"] = shop.pk
 
@@ -266,7 +276,7 @@ class InventoryApi(ViewSet):
         try:
             inventory = Inventory.objects.get(
                 uid=uid,
-                status=True
+                deleted_at__isnull=True
             )
             inventory_serializer = self.serializer_class(
                 inventory, many=False
@@ -284,7 +294,7 @@ class InventoryApi(ViewSet):
         try:
             inventory = Inventory.objects.get(
                 uid=uid,
-                status=True
+                deleted_at__isnull=True
             )
             if 'name' not in request.data:
                 request.data['name'] = inventory.name
@@ -320,7 +330,7 @@ class InventoryApi(ViewSet):
         try:
             inventory = Inventory.objects.get(
                 uid=uid,
-                status=True
+                deleted_at__isnull=True
             )
             inventory.delete()
             return HttpUtil.success_response(
@@ -342,7 +352,7 @@ class StockEntryApi(ViewSet):
         try:
             inventory = Inventory.objects.get(
                 uid=uid,
-                status=True,
+                deleted_at__isnull=True,
                 shop__uid=request.query_params.get("shop_uid")
             )
 
@@ -381,7 +391,7 @@ class StockOutApi(ViewSet):
         try:
             inventory = Inventory.objects.get(
                 uid=uid,
-                status=True,
+                deleted_at__isnull=True,
                 shop__uid=request.query_params.get("shop_uid")
             )
 
@@ -431,7 +441,7 @@ class SaleApi(ViewSet):
 
         sales = Sale.objects.filter(
             shop__uid=shop_uid,
-            status=True
+            deleted_at__isnull=True
         )
         sale_serializer = self.sale_serializer_class(
             sales, many=True
@@ -459,7 +469,7 @@ class SaleApi(ViewSet):
         try:
             sale = Sale.objects.get(
                 uid=uid,
-                status=True
+                deleted_at__isnull=True
             )
         except Sale.DoesNotExist:
             return HttpUtil.error_response(
@@ -477,7 +487,7 @@ class SaleApi(ViewSet):
         try:
             sale = Sale.objects.get(
                 uid=uid,
-                status=True
+                deleted_at__isnull=True
             )
         except Sale.DoesNotExist:
             return HttpUtil.error_response(
@@ -516,7 +526,7 @@ class CustomerApi(ViewSet):
         try:
             shop = Shop.objects.get(
                 uid=shop_uid,
-                status=True
+                deleted_at__isnull=True
             )
         except Shop.DoesNotExist:
             return None
@@ -531,7 +541,7 @@ class CustomerApi(ViewSet):
             customer = Customer.objects.get(
                 shop=shop,
                 uid=customer_uid,
-                status=True
+                deleted_at__isnull=True
             )
         except Customer.DoesNotExist:
             return None
@@ -548,7 +558,7 @@ class CustomerApi(ViewSet):
 
         customers = Customer.objects.filter(
             shop__uid=shop.uid,
-            status=True
+            deleted_at__isnull=True
         )
         customer_serializer = self.serializer_class(
             customers, many=True
@@ -575,7 +585,7 @@ class CustomerApi(ViewSet):
 
         customer_serializer.save(
             shop=shop,
-            status=True,
+            deleted_at__isnull=True,
             created_by=request.user
         )
         return HttpUtil.success_response(
@@ -652,7 +662,7 @@ class PayableSaleApi(ViewSet):
 
         payable_sales = Sale.objects.filter(
             shop__uid=shop_uid,
-            status=True,
+            deleted_at__isnull=True,
             is_paid=False,
             **filter_query
         )

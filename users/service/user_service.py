@@ -36,7 +36,7 @@ class UserService:
                     "iat": datetime.datetime.utcnow(),
                     "nbf": datetime.datetime.utcnow(),
                     "email": user.email,
-                    "user_guid": user.guid.hex,
+                    "user_uid": user.uid.hex,
                 },
                 settings.SECRET_KEY,
                 algorithm="HS256",
@@ -93,14 +93,14 @@ class UserService:
             return None
 
     @staticmethod
-    def get_user_by_guid(guid: str):
+    def get_user_by_uid(uid: str):
         """
-        Get user by guid
-        :param guid:
+        Get user by uid
+        :param uid:
         :return:
         """
         try:
-            user = User.objects.get(guid=guid)
+            user = User.objects.get(uid=uid)
             return user
         except User.DoesNotExist:
             return None
