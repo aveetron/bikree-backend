@@ -13,13 +13,13 @@ class SaleSerializerHelper:
 
     def get_shop(self) -> Dict[str, any]:
         return {
-            "guid": self.obj.guid.hex if self.obj else None,
+            "uid": self.obj.uid.hex if self.obj else None,
             "name": self.obj.name if self.obj else None
         }
 
     def get_created_by(self) -> Dict[str, any]:
         return {
-            "guid": self.obj.guid.hex if self.obj else None,
+            "uid": self.obj.uid.hex if self.obj else None,
             "name": f"{self.obj.first_name} {self.obj.last_name}" if self.obj else None,
             "role": self.obj.role.name if self.obj.role else None
         }
@@ -82,24 +82,24 @@ class ShopSerializer(BikreeBaseWithUserSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    guid = serializers.CharField(required=False,
-                                 source="guid.hex",
+    uid = serializers.CharField(required=False,
+                                 source="uid.hex",
                                  read_only=True)
 
     class Meta:
         model = Category
         fields = [
-            "guid", "name", "status"
+            "uid", "name", "status"
         ]
 
 
 class InventorySerializer(serializers.ModelSerializer):
-    guid = serializers.CharField(required=False,
-                                 source="guid.hex",
+    uid = serializers.CharField(required=False,
+                                 source="uid.hex",
                                  read_only=True)
-    shop_guid = serializers.CharField(required=False,
+    shop_uid = serializers.CharField(required=False,
                                       read_only=True,
-                                      source="shop.guid.hex")
+                                      source="shop.uid.hex")
     shop_name = serializers.CharField(required=False,
                                       read_only=True,
                                       source="shop.name")
@@ -115,8 +115,8 @@ class InventorySerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
-    guid = serializers.CharField(required=False,
-                                 source="guid.hex",
+    uid = serializers.CharField(required=False,
+                                 source="uid.hex",
                                  read_only=True)
     shop = serializers.SerializerMethodField(read_only=True)
     created_by = serializers.SerializerMethodField(read_only=True)
@@ -135,7 +135,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class SaleDetailSerializer(serializers.ModelSerializer):
-    guid = serializers.CharField(required=False, source="guid.hex")
+    uid = serializers.CharField(required=False, source="uid.hex")
     inventory = serializers.SerializerMethodField(
         read_only=True
     )
@@ -150,7 +150,7 @@ class SaleDetailSerializer(serializers.ModelSerializer):
 
 
 class SaleSerializer(serializers.ModelSerializer):
-    guid = serializers.CharField(required=False, source="guid.hex")
+    uid = serializers.CharField(required=False, source="uid.hex")
     shop = serializers.SerializerMethodField(read_only=True)
     details = SaleDetailSerializer(many=True, read_only=True)
     created_by = serializers.SerializerMethodField(read_only=True)

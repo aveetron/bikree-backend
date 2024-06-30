@@ -12,7 +12,7 @@ from core.http_utils import HttpUtil
 class UomApi(ViewSet):
     serializer_class = UomSerializer
     permission_classes = [IsAdmin | IsBusinessAnalyst]
-    lookup_field = "guid"
+    lookup_field = "uid"
 
     def get_permissions(self) -> list:
         if self.action == "list":
@@ -51,9 +51,9 @@ class UomApi(ViewSet):
             message="created"
         )
 
-    def retrieve(self, request: Request, guid: str = None) -> Response:
+    def retrieve(self, request: Request, uid: str = None) -> Response:
         try:
-            uom = Uom.objects.get(guid=guid)
+            uom = Uom.objects.get(uid=uid)
             uom_serializer = self.serializer_class(
                 uom, many=False
             )
@@ -65,9 +65,9 @@ class UomApi(ViewSet):
                 message="uom not found!"
             )
 
-    def update(self, request: Request, guid: str = None) -> Response:
+    def update(self, request: Request, uid: str = None) -> Response:
         try:
-            uom = Uom.objects.get(guid=guid)
+            uom = Uom.objects.get(uid=uid)
             uom_serializer = self.serializer_class(
                 uom, data=request.data
             )
@@ -85,9 +85,9 @@ class UomApi(ViewSet):
                 message="uom not found!"
             )
 
-    def delete(self, request: Request, guid: str = None) -> Response:
+    def delete(self, request: Request, uid: str = None) -> Response:
         try:
-            uom = Uom.objects.get(guid=guid)
+            uom = Uom.objects.get(uid=uid)
             uom.delete()
             return HttpUtil.success_response(
                 message="uom deleted."

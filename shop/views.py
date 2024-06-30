@@ -16,7 +16,7 @@ from shop.serializers import ShopSerializer, CategorySerializer, InventorySerial
 class ShopApi(ViewSet):
     serializer_class = ShopSerializer
     permission_classes = [IsShopOwner]
-    lookup_field = "guid"
+    lookup_field = "uid"
 
     def list(self, request: Request) -> Response:
         shops = Shop.objects.filter(
@@ -49,10 +49,10 @@ class ShopApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def retrieve(self, request: Request, guid: str = None) -> Response:
+    def retrieve(self, request: Request, uid: str = None) -> Response:
         try:
             shop = Shop.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True
             )
             if shop:
@@ -69,10 +69,10 @@ class ShopApi(ViewSet):
                 message="shop not found."
             )
 
-    def update(self, request: Request, guid: str = None) -> Response:
+    def update(self, request: Request, uid: str = None) -> Response:
         try:
             shop = Shop.objects.get(
-                guid=guid,
+                uid=uid,
                 owner=request.user,
                 status=True
             )
@@ -94,10 +94,10 @@ class ShopApi(ViewSet):
                 message="shop not found."
             )
 
-    def delete(self, request: Request, guid: str = None) -> Response:
+    def delete(self, request: Request, uid: str = None) -> Response:
         try:
             shop = Shop.objects.get(
-                guid=guid,
+                uid=uid,
                 owner=request.user,
                 status=True
             )
@@ -114,7 +114,7 @@ class ShopApi(ViewSet):
 class CategoryApi(ViewSet):
     serializer_class = CategorySerializer
     permission_classes = [IsShopOwner]
-    lookup_field = "guid"
+    lookup_field = "uid"
 
     def list(self, request: Request) -> Response:
         categories = Category.objects.filter(
@@ -157,10 +157,10 @@ class CategoryApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def retrieve(self, request: Request, guid: str = None) -> Response:
+    def retrieve(self, request: Request, uid: str = None) -> Response:
         try:
             category = Category.objects.get(
-                guid=guid,
+                uid=uid,
                 created_by=request.user,
                 status=True
             )
@@ -173,10 +173,10 @@ class CategoryApi(ViewSet):
                 message="category not found."
             )
 
-    def update(self, request: Request, guid: str = None) -> Response:
+    def update(self, request: Request, uid: str = None) -> Response:
         try:
             category = Category.objects.get(
-                guid=guid,
+                uid=uid,
                 created_by=request.user,
                 status=True
             )
@@ -197,10 +197,10 @@ class CategoryApi(ViewSet):
                 message="category not found."
             )
 
-    def delete(self, request: Request, guid: str = None) -> Response:
+    def delete(self, request: Request, uid: str = None) -> Response:
         try:
             category = Category.objects.get(
-                guid=guid,
+                uid=uid,
                 created_by=request.user,
                 status=True
             )
@@ -217,12 +217,12 @@ class CategoryApi(ViewSet):
 class InventoryApi(ViewSet):
     serializer_class = InventorySerializer
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
-    lookup_field = "guid"
+    lookup_field = "uid"
 
     def list(self, request: Request) -> Response:
-        shop_guid = request.query_params.get("shop_guid")
+        shop_uid = request.query_params.get("shop_uid")
         inventories = Inventory.objects.filter(
-            shop__guid=shop_guid,
+            shop__uid=shop_uid,
             status=True
         )
         shop_serializer = self.serializer_class(
@@ -242,8 +242,8 @@ class InventoryApi(ViewSet):
         if "status" not in request.data:
             request.data["status"] = True
 
-        if "shop_guid" in request.data:
-            shop = Shop.objects.get(guid=request.data["shop_guid"],
+        if "shop_uid" in request.data:
+            shop = Shop.objects.get(uid=request.data["shop_uid"],
                                     status=True)
             if shop:
                 request.data["shop"] = shop.pk
@@ -262,10 +262,10 @@ class InventoryApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def retrieve(self, request: Request, guid: str = None) -> Response:
+    def retrieve(self, request: Request, uid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True
             )
             inventory_serializer = self.serializer_class(
@@ -280,10 +280,10 @@ class InventoryApi(ViewSet):
                 "Inventory doesn't found!"
             )
 
-    def update(self, request: Request, guid: str = None) -> Response:
+    def update(self, request: Request, uid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True
             )
             if 'name' not in request.data:
@@ -316,10 +316,10 @@ class InventoryApi(ViewSet):
                 "Inventory doesn't found!"
             )
 
-    def delete(self, request: Request, guid: str = None) -> Response:
+    def delete(self, request: Request, uid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True
             )
             inventory.delete()
@@ -336,14 +336,14 @@ class InventoryApi(ViewSet):
 class StockEntryApi(ViewSet):
     serializer_class = InventorySerializer
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
-    lookup_field = "guid"
+    lookup_field = "uid"
 
-    def update(self, request: Request, guid: str = None) -> Response:
+    def update(self, request: Request, uid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True,
-                shop__guid=request.query_params.get("shop_guid")
+                shop__uid=request.query_params.get("shop_uid")
             )
 
             if "total_stock" not in request.data:
@@ -375,14 +375,14 @@ class StockEntryApi(ViewSet):
 class StockOutApi(ViewSet):
     serializer_class = InventorySerializer
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
-    lookup_field = "guid"
+    lookup_field = "uid"
 
-    def update(self, request: Request, guid: str = None) -> Response:
+    def update(self, request: Request, uid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True,
-                shop__guid=request.query_params.get("shop_guid")
+                shop__uid=request.query_params.get("shop_uid")
             )
 
             if "total_stock" not in request.data:
@@ -420,17 +420,17 @@ class SaleApi(ViewSet):
     permission_classes = [IsShopOwner | IsShopEmployee | IsShopManager]
     sale_serializer_class = SaleSerializer
     sale_detail_serializer = SaleDetailSerializer
-    lookup_field = "guid"
+    lookup_field = "uid"
 
     def list(self, request: Request) -> Response:
-        shop_guid = request.query_params.get("shop_guid", None)
-        if not shop_guid:
+        shop_uid = request.query_params.get("shop_uid", None)
+        if not shop_uid:
             return HttpUtil.error_response(
                 message="shop missing"
             )
 
         sales = Sale.objects.filter(
-            shop__guid=shop_guid,
+            shop__uid=shop_uid,
             status=True
         )
         sale_serializer = self.sale_serializer_class(
@@ -455,10 +455,10 @@ class SaleApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def retrieve(self, request: Request, guid: str) -> Response:
+    def retrieve(self, request: Request, uid: str) -> Response:
         try:
             sale = Sale.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True
             )
         except Sale.DoesNotExist:
@@ -473,10 +473,10 @@ class SaleApi(ViewSet):
             data=sale_serializer.data
         )
 
-    def delete(self, request: Request, guid: str) -> Response:
+    def delete(self, request: Request, uid: str) -> Response:
         try:
             sale = Sale.objects.get(
-                guid=guid,
+                uid=uid,
                 status=True
             )
         except Sale.DoesNotExist:
@@ -507,15 +507,15 @@ class SaleApi(ViewSet):
 class CustomerApi(ViewSet):
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
     serializer_class = CustomerSerializer
-    lookup_field = "guid"
+    lookup_field = "uid"
 
-    def check_shop(self, shop_guid: Union[str, None]) -> Union[Shop, None]:
-        if shop_guid is None:
+    def check_shop(self, shop_uid: Union[str, None]) -> Union[Shop, None]:
+        if shop_uid is None:
             return None
 
         try:
             shop = Shop.objects.get(
-                guid=shop_guid,
+                uid=shop_uid,
                 status=True
             )
         except Shop.DoesNotExist:
@@ -523,14 +523,14 @@ class CustomerApi(ViewSet):
 
         return shop
 
-    def check_customer(self, shop, customer_guid):
-        if customer_guid is None:
+    def check_customer(self, shop, customer_uid):
+        if customer_uid is None:
             return None
 
         try:
             customer = Customer.objects.get(
                 shop=shop,
-                guid=customer_guid,
+                uid=customer_uid,
                 status=True
             )
         except Customer.DoesNotExist:
@@ -539,15 +539,15 @@ class CustomerApi(ViewSet):
         return customer
 
     def list(self, request: Request) -> Response:
-        shop_guid = request.query_params.get("shop_guid", None)
-        shop = self.check_shop(shop_guid)
+        shop_uid = request.query_params.get("shop_uid", None)
+        shop = self.check_shop(shop_uid)
         if shop is None:
             return HttpUtil.error_response(
                 message="Shop Not Defined!"
             )
 
         customers = Customer.objects.filter(
-            shop__guid=shop.guid,
+            shop__uid=shop.uid,
             status=True
         )
         customer_serializer = self.serializer_class(
@@ -559,8 +559,8 @@ class CustomerApi(ViewSet):
 
     def create(self, request: Request) -> Response:
         payload = request.data
-        shop_guid = request.query_params.get("shop_guid", None)
-        shop = self.check_shop(shop_guid)
+        shop_uid = request.query_params.get("shop_uid", None)
+        shop = self.check_shop(shop_uid)
         if shop is None:
             return HttpUtil.error_response(
                 message="Shop Not Defined!"
@@ -583,10 +583,10 @@ class CustomerApi(ViewSet):
             code=status.HTTP_201_CREATED
         )
 
-    def get(self, request: Request, guid: str) -> Response:
-        shop_guid = request.query_params.get("shop_guid", None)
-        shop = self.check_shop(shop_guid)
-        customer = self.check_customer(shop, guid)
+    def get(self, request: Request, uid: str) -> Response:
+        shop_uid = request.query_params.get("shop_uid", None)
+        shop = self.check_shop(shop_uid)
+        customer = self.check_customer(shop, uid)
         if (shop and customer) is None:
             return HttpUtil.error_response(
                 message="Shop Not Defined!"
@@ -598,10 +598,10 @@ class CustomerApi(ViewSet):
             data=customer_serializer.data
         )
 
-    def update(self, request: Request, guid: str) -> Response:
-        shop_guid = request.query_params.get("shop_guid", None)
-        shop = self.check_shop(shop_guid)
-        customer = self.check_customer(shop, guid)
+    def update(self, request: Request, uid: str) -> Response:
+        shop_uid = request.query_params.get("shop_uid", None)
+        shop = self.check_shop(shop_uid)
+        customer = self.check_customer(shop, uid)
         if (shop and customer) is None:
             return HttpUtil.error_response(
                 message="Shop Not Defined!"
@@ -621,10 +621,10 @@ class CustomerApi(ViewSet):
             message="Customer Updated"
         )
 
-    def delete(self, request: Request, guid: str) -> Response:
-        shop_guid = request.query_params.get("shop_guid", None)
-        shop = self.check_shop(shop_guid)
-        customer = self.check_customer(shop, guid)
+    def delete(self, request: Request, uid: str) -> Response:
+        shop_uid = request.query_params.get("shop_uid", None)
+        shop = self.check_shop(shop_uid)
+        customer = self.check_customer(shop, uid)
         if (shop and customer) is None:
             return HttpUtil.error_response(
                 message="Shop Not Defined!"
@@ -640,18 +640,18 @@ class PayableSaleApi(ViewSet):
     serializer_class = SaleSerializer
 
     def list(self, request: Request) -> Response:
-        shop_guid = request.query_params.get("shop_guid", None)
+        shop_uid = request.query_params.get("shop_uid", None)
         filter_query = {
             "start_date": request.query_params.get("start_date", None),
             "end_date": request.query_params.get("end_date", None)
         }
-        if shop_guid is None:
+        if shop_uid is None:
             return HttpUtil.error_response(
                 message="Shop Not Found!"
             )
 
         payable_sales = Sale.objects.filter(
-            shop__guid=shop_guid,
+            shop__uid=shop_uid,
             status=True,
             is_paid=False,
             **filter_query

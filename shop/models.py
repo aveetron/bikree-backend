@@ -12,7 +12,7 @@ class Shop(BikreeBaseModelWithUser):
                               related_name="store_owner")
 
     def __str__(self) -> str:
-        return f"guid: {self.guid} , name: {self.name}"
+        return f"uid: {self.uid} , name: {self.name}"
 
 
 class Category(BikreeBaseModelWithUser):

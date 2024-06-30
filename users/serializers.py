@@ -9,7 +9,7 @@ from .models import User, Role
 
 
 class UserSerializer(BikreeBaseSerializer):
-    guid = serializers.CharField(read_only=True, source="guid.hex")
+    uid = serializers.CharField(read_only=True, source="uid.hex")
     phone = serializers.CharField(allow_blank=False)
     first_name = serializers.CharField(
         required=False, allow_null=True, allow_blank=True

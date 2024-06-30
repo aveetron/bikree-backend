@@ -1,5 +1,3 @@
-from django.db.migrations import serializer
-
 from core.base_abstract_serializers import BikreeBaseSerializer
 from users.serializers import UserSerializer
 

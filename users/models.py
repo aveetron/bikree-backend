@@ -16,7 +16,7 @@ class Role(BikreeBaseModel):
     )
 
     def __str__(self) -> str:
-        return f"guid: {self.guid} name: {self.name}"
+        return f"uid: {self.uid} name: {self.name}"
 
 
 class User(AbstractUser, BikreeBaseModel):
@@ -36,7 +36,7 @@ class User(AbstractUser, BikreeBaseModel):
         indexes = [
             models.Index(
                 fields=[
-                    "guid",
+                    "uid",
                 ]
             ),
         ]
@@ -44,4 +44,4 @@ class User(AbstractUser, BikreeBaseModel):
     objects = CustomUserManager()
 
     def __str__(self) -> str:
-        return f"{self.phone} - {self.guid.hex}"
+        return f"{self.phone} - {self.uid.hex}"
