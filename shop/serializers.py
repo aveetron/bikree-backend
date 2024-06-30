@@ -1,7 +1,6 @@
-from typing import Dict, Any, Union
+from typing import Dict, Any
 
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from core.base_abstract_serializers import BikreeBaseModelSerializer
 from core.serializer_helpers import UserSerializerHelper, ShopSerializerHelper, InventorySerializerHelper
@@ -98,8 +97,8 @@ class InventorySerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(serializers.ModelSerializer):
     uid = serializers.CharField(required=False,
-                                 source="uid.hex",
-                                 read_only=True)
+                                source="uid.hex",
+                                read_only=True)
     shop = serializers.SerializerMethodField(read_only=True)
     created_by = serializers.SerializerMethodField(read_only=True)
 

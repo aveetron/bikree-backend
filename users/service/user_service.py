@@ -41,7 +41,7 @@ class UserService:
                 settings.SECRET_KEY,
                 algorithm="HS256",
             )
-        except Exception as e:
+        except Exception:
             return None
 
     @staticmethod
@@ -60,7 +60,7 @@ class UserService:
             return "Invalid token"
         except jwt.InvalidTokenError:
             return "Invalid token"
-        except Exception as e:
+        except Exception:
             return "Invalid token"
 
     @staticmethod
@@ -74,7 +74,7 @@ class UserService:
             user.is_active = True
             user.save()
             return user
-        except Exception as e:
+        except Exception:
             return None
 
     @staticmethod
@@ -89,7 +89,7 @@ class UserService:
             return user
         except User.DoesNotExist:
             return None
-        except Exception as e:
+        except Exception:
             return None
 
     @staticmethod
@@ -104,5 +104,5 @@ class UserService:
             return user
         except User.DoesNotExist:
             return None
-        except Exception as e:
+        except Exception:
             return None

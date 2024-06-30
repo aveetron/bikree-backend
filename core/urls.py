@@ -26,4 +26,3 @@ urlpatterns = [
     path('api/v1/sale/', include(sale_router.urls)),
     path('api/v1/customer/', include(customer_router.urls)),
 ]
-
