@@ -75,23 +75,46 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class InventorySerializer(serializers.ModelSerializer):
     uid = serializers.CharField(required=False, source="uid.hex", read_only=True)
-    shop_uid = serializers.CharField(
-        required=False, read_only=True, source="shop.uid.hex"
-    )
-    shop_name = serializers.CharField(
-        required=False, read_only=True, source="shop.name"
-    )
+    item = serializers.SerializerMethodField(required=False, read_only=True)
+    store = serializers.SerializerMethodField(required=False, read_only=True)
 
     class Meta:
         model = Inventory
         exclude = ["id"]
 
+    def validate(self, attrs):
+        name = attrs.get("name", None)
+        shop = attrs.get("shop", None)
+
+        if name and shop:
+            attrs["name"] = name.lower()
+            if Inventory.objects.filter(
+                    name=name, shop=shop).exists():
+                raise serializers.ValidationError("Inventory Name Already Exists!")
+
+        return attrs
+
     def to_representation(self, instance: Inventory) -> Dict[str, Any]:
         representation = super().to_representation(instance)
-        representation.pop(
-            "shop", None
-        )  # Remove the 'shop' field from the representation
+        representation.pop("updated_by", None)
+        representation.pop("total_stock", None)
+        representation.pop("position", None)
+        representation.pop("rack", None)
+        representation.pop("floor", None)
+        representation.pop("created_by", None)
+        representation.pop("deleted_at", None)
+        representation.pop("name", None)
+        representation.pop("description", None)
+        representation.pop("shop", None)
         return representation
+
+    def get_item(self, obj: Inventory) -> Dict:
+        helper = InventorySerializerHelper(obj)
+        return helper.get_inventory()
+
+    def get_store(self, obj: Shop) -> Dict:
+        helper = ShopSerializerHelper(obj.shop)
+        return helper.get_shop()
 
 
 class CustomerSerializer(serializers.ModelSerializer):

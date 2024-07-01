@@ -1,6 +1,6 @@
 import decimal
-from typing import Union
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -9,6 +9,7 @@ from rest_framework.viewsets import ViewSet
 from core.http_utils import HttpUtil
 from core.permissions import IsShopEmployee, IsShopManager, IsShopOwner
 from core.utils import soft_delete
+from shop.handler import ShopHandler, UserHandler
 from shop.models import Category, Customer, Inventory, Sale, SaleDetail, Shop
 from shop.serializers import (
     CategorySerializer,
@@ -174,28 +175,27 @@ class InventoryApi(ViewSet):
         return HttpUtil.success_response(data=shop_serializer.data)
 
     def create(self, request: Request) -> Response:
-        shop = None
-
         if "created_by" not in request.data:
             request.data["created_by"] = request.user.pk
 
-        if "status" not in request.data:
-            request.data["status"] = True
-
+        # Lookup shop by 'shop_uid' if provided
         if "shop_uid" in request.data:
-            shop = Shop.objects.get(
-                uid=request.data["shop_uid"], deleted_at__isnull=True
-            )
-            if shop:
-                request.data["shop"] = shop.pk
+            shop = get_object_or_404(Shop, uid=request.data["shop_uid"], deleted_at__isnull=True)
+            request.data["shop"] = shop.pk
 
+        # Serialize and validate data
         inventory_serializer = self.serializer_class(data=request.data)
         if not inventory_serializer.is_valid():
-            return HttpUtil.error_response(message=inventory_serializer.errors)
+            return HttpUtil.error_response(
+                message=inventory_serializer.errors
+            )
 
+        # Save the serializer data
         inventory_serializer.save()
+
+        # Return success response
         return HttpUtil.success_response(
-            message="success", code=status.HTTP_201_CREATED
+            message="Inventory Created."
         )
 
     def retrieve(self, request: Request, uid: str = None) -> Response:
@@ -210,16 +210,9 @@ class InventoryApi(ViewSet):
     def update(self, request: Request, uid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(uid=uid, deleted_at__isnull=True)
-            if "name" not in request.data:
-                request.data["name"] = inventory.name
 
-            if "created_by" not in request.data:
-                request.data["created_by"] = inventory.created_by.id
-
-            if "shop" not in request.data:
-                request.data["shop"] = inventory.shop.id
-
-            inventory_serializer = self.serializer_class(inventory, data=request.data)
+            inventory_serializer = self.serializer_class(
+                inventory, data=request.data, partial=True)
             if not inventory_serializer.is_valid():
                 return HttpUtil.error_response(message=inventory_serializer.errors)
 
@@ -251,7 +244,7 @@ class StockEntryApi(ViewSet):
             inventory = Inventory.objects.get(
                 uid=uid,
                 deleted_at__isnull=True,
-                shop__uid=request.query_params.get("shop_uid"),
+                shop__uid=request.query_params.get("shop_uid")
             )
 
             if "total_stock" not in request.data:
@@ -261,16 +254,9 @@ class StockEntryApi(ViewSet):
                 request.data["total_stock"]
             ) + decimal.Decimal(inventory.total_stock)
 
-            # Ensure required fields have default values
-            data = request.data.copy()
-            data.setdefault("name", inventory.name)
-            data.setdefault(
-                "created_by", inventory.created_by.id if inventory.created_by else None
-            )
-            data.setdefault("shop", inventory.shop.id if inventory.shop else None)
-
             # Update the inventory item
-            inventory_serializer = self.serializer_class(inventory, data=data)
+            inventory_serializer = self.serializer_class(
+                inventory, data=request.data, partial=True)
             if not inventory_serializer.is_valid():
                 return HttpUtil.error_response(message=inventory_serializer.errors)
 
@@ -306,16 +292,9 @@ class StockOutApi(ViewSet):
                 inventory.total_stock
             ) - decimal.Decimal(request.data["total_stock"])
 
-            # Ensure required fields have default values
-            data = request.data.copy()
-            data.setdefault("name", inventory.name)
-            data.setdefault(
-                "created_by", inventory.created_by.id if inventory.created_by else None
-            )
-            data.setdefault("shop", inventory.shop.id if inventory.shop else None)
-
             # Update the inventory item
-            inventory_serializer = self.serializer_class(inventory, data=data)
+            inventory_serializer = self.serializer_class(
+                inventory, data=request.data, partial=True)
             if not inventory_serializer.is_valid():
                 return HttpUtil.error_response(message=inventory_serializer.errors)
 
@@ -389,33 +368,9 @@ class CustomerApi(ViewSet):
     serializer_class = CustomerSerializer
     lookup_field = "uid"
 
-    def check_shop(self, shop_uid: Union[str, None]) -> Union[Shop, None]:
-        if shop_uid is None:
-            return None
-
-        try:
-            shop = Shop.objects.get(uid=shop_uid, deleted_at__isnull=True)
-        except Shop.DoesNotExist:
-            return None
-
-        return shop
-
-    def check_customer(self, shop, customer_uid):
-        if customer_uid is None:
-            return None
-
-        try:
-            customer = Customer.objects.get(
-                shop=shop, uid=customer_uid, deleted_at__isnull=True
-            )
-        except Customer.DoesNotExist:
-            return None
-
-        return customer
-
     def list(self, request: Request) -> Response:
         shop_uid = request.query_params.get("shop_uid", None)
-        shop = self.check_shop(shop_uid)
+        shop = ShopHandler.check_shop(shop_uid)
         if shop is None:
             return HttpUtil.error_response(message="Shop Not Defined!")
 
@@ -426,7 +381,7 @@ class CustomerApi(ViewSet):
     def create(self, request: Request) -> Response:
         payload = request.data
         shop_uid = request.query_params.get("shop_uid", None)
-        shop = self.check_shop(shop_uid)
+        shop = ShopHandler.check_shop(shop_uid)
         if shop is None:
             return HttpUtil.error_response(message="Shop Not Defined!")
         customer_serializer = self.serializer_class(data=payload)
@@ -442,8 +397,8 @@ class CustomerApi(ViewSet):
 
     def get(self, request: Request, uid: str) -> Response:
         shop_uid = request.query_params.get("shop_uid", None)
-        shop = self.check_shop(shop_uid)
-        customer = self.check_customer(shop, uid)
+        shop = ShopHandler.check_shop(shop_uid)
+        customer = UserHandler.check_shop_wise_customer(shop, uid)
         if (shop and customer) is None:
             return HttpUtil.error_response(message="Shop Not Defined!")
         customer_serializer = self.serializer_class(customer, many=False)
@@ -451,8 +406,8 @@ class CustomerApi(ViewSet):
 
     def update(self, request: Request, uid: str) -> Response:
         shop_uid = request.query_params.get("shop_uid", None)
-        shop = self.check_shop(shop_uid)
-        customer = self.check_customer(shop, uid)
+        shop = ShopHandler.check_shop(shop_uid)
+        customer = UserHandler.check_shop_wise_customer(shop, uid)
         if (shop and customer) is None:
             return HttpUtil.error_response(message="Shop Not Defined!")
 
@@ -469,8 +424,8 @@ class CustomerApi(ViewSet):
 
     def delete(self, request: Request, uid: str) -> Response:
         shop_uid = request.query_params.get("shop_uid", None)
-        shop = self.check_shop(shop_uid)
-        customer = self.check_customer(shop, uid)
+        shop = ShopHandler.check_shop(shop_uid)
+        customer = UserHandler.check_shop_wise_customer(shop, uid)
         if (shop and customer) is None:
             return HttpUtil.error_response(message="Shop Not Defined!")
         customer.delete()
