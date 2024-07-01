@@ -40,7 +40,7 @@ class InventorySerializerHelper(SerializerHelper):
                 "floor": self.obj.floor if self.obj else None,
                 "rack": self.obj.rack if self.obj else None,
             },
-            "total_stock": self.obj.total_stock if self.obj.total_stock else None
+            "total_stock": self.obj.total_stock if self.obj.total_stock else None,
         }
 
 

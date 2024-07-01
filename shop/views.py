@@ -11,14 +11,9 @@ from core.permissions import IsShopEmployee, IsShopManager, IsShopOwner
 from core.utils import soft_delete
 from shop.handler import ShopHandler, UserHandler
 from shop.models import Category, Customer, Inventory, Sale, SaleDetail, Shop
-from shop.serializers import (
-    CategorySerializer,
-    CustomerSerializer,
-    InventorySerializer,
-    SaleDetailSerializer,
-    SaleSerializer,
-    ShopSerializer,
-)
+from shop.serializers import (CategorySerializer, CustomerSerializer,
+                              InventorySerializer, SaleDetailSerializer,
+                              SaleSerializer, ShopSerializer)
 
 
 class ShopApi(ViewSet):
@@ -180,23 +175,21 @@ class InventoryApi(ViewSet):
 
         # Lookup shop by 'shop_uid' if provided
         if "shop_uid" in request.data:
-            shop = get_object_or_404(Shop, uid=request.data["shop_uid"], deleted_at__isnull=True)
+            shop = get_object_or_404(
+                Shop, uid=request.data["shop_uid"], deleted_at__isnull=True
+            )
             request.data["shop"] = shop.pk
 
         # Serialize and validate data
         inventory_serializer = self.serializer_class(data=request.data)
         if not inventory_serializer.is_valid():
-            return HttpUtil.error_response(
-                message=inventory_serializer.errors
-            )
+            return HttpUtil.error_response(message=inventory_serializer.errors)
 
         # Save the serializer data
         inventory_serializer.save()
 
         # Return success response
-        return HttpUtil.success_response(
-            message="Inventory Created."
-        )
+        return HttpUtil.success_response(message="Inventory Created.")
 
     def retrieve(self, request: Request, uid: str = None) -> Response:
         try:
@@ -212,7 +205,8 @@ class InventoryApi(ViewSet):
             inventory = Inventory.objects.get(uid=uid, deleted_at__isnull=True)
 
             inventory_serializer = self.serializer_class(
-                inventory, data=request.data, partial=True)
+                inventory, data=request.data, partial=True
+            )
             if not inventory_serializer.is_valid():
                 return HttpUtil.error_response(message=inventory_serializer.errors)
 
@@ -244,7 +238,7 @@ class StockEntryApi(ViewSet):
             inventory = Inventory.objects.get(
                 uid=uid,
                 deleted_at__isnull=True,
-                shop__uid=request.query_params.get("shop_uid")
+                shop__uid=request.query_params.get("shop_uid"),
             )
 
             if "total_stock" not in request.data:
@@ -256,7 +250,8 @@ class StockEntryApi(ViewSet):
 
             # Update the inventory item
             inventory_serializer = self.serializer_class(
-                inventory, data=request.data, partial=True)
+                inventory, data=request.data, partial=True
+            )
             if not inventory_serializer.is_valid():
                 return HttpUtil.error_response(message=inventory_serializer.errors)
 
@@ -294,7 +289,8 @@ class StockOutApi(ViewSet):
 
             # Update the inventory item
             inventory_serializer = self.serializer_class(
-                inventory, data=request.data, partial=True)
+                inventory, data=request.data, partial=True
+            )
             if not inventory_serializer.is_valid():
                 return HttpUtil.error_response(message=inventory_serializer.errors)
 

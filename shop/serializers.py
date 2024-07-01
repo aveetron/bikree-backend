@@ -3,11 +3,9 @@ from typing import Any, Dict
 from rest_framework import serializers
 
 from core.base_abstract_serializers import BikreeBaseModelSerializer
-from core.serializer_helpers import (
-    InventorySerializerHelper,
-    ShopSerializerHelper,
-    UserSerializerHelper,
-)
+from core.serializer_helpers import (InventorySerializerHelper,
+                                     ShopSerializerHelper,
+                                     UserSerializerHelper)
 
 from .models import Category, Customer, Inventory, Sale, SaleDetail, Shop
 
@@ -88,8 +86,7 @@ class InventorySerializer(serializers.ModelSerializer):
 
         if name and shop:
             attrs["name"] = name.lower()
-            if Inventory.objects.filter(
-                    name=name, shop=shop).exists():
+            if Inventory.objects.filter(name=name, shop=shop).exists():
                 raise serializers.ValidationError("Inventory Name Already Exists!")
 
         return attrs
