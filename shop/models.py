@@ -39,7 +39,7 @@ class Inventory(BikreeBaseModelWithUser):
         return f"shop {self.shop.name}: name {self.name}"
     
 
-class CustomerVendorAbstractModel(BikreeBaseModelWithUser):
+class BusinessPartnerAbstractModel(BikreeBaseModelWithUser):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=100, null=True, blank=True)
@@ -52,11 +52,11 @@ class CustomerVendorAbstractModel(BikreeBaseModelWithUser):
         return f"{self.shop.name} {self.name}"
 
 
-class Customer(CustomerVendorAbstractModel):
+class Customer(BusinessPartnerAbstractModel):
     pass
     
 
-class Vendor(CustomerVendorAbstractModel):
+class Vendor(BusinessPartnerAbstractModel):
     pass
 
 
