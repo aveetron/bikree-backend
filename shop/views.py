@@ -10,10 +10,10 @@ from core.http_utils import HttpUtil
 from core.permissions import IsShopEmployee, IsShopManager, IsShopOwner
 from core.utils import soft_delete
 from shop.handler import ShopHandler, UserHandler
-from shop.models import Category, Customer, Inventory, Sale, SaleDetail, Shop
+from shop.models import Category, Customer, Inventory, Sale, SaleDetail, Shop, Vendor
 from shop.serializers import (CategorySerializer, CustomerSerializer,
                               InventorySerializer, SaleDetailSerializer,
-                              SaleSerializer, ShopSerializer)
+                              SaleSerializer, ShopSerializer, VenodrSerializer)
 
 
 class ShopApi(ViewSet):
@@ -365,48 +365,33 @@ class CustomerApi(ViewSet):
     lookup_field = "uid"
 
     def list(self, request: Request) -> Response:
-        shop_uid = request.query_params.get("shop_uid", None)
-        shop = ShopHandler.check_shop(shop_uid)
-        if shop is None:
-            return HttpUtil.error_response(message="Shop Not Defined!")
-
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
         customers = Customer.objects.filter(shop__uid=shop.uid, deleted_at__isnull=True)
         customer_serializer = self.serializer_class(customers, many=True)
         return HttpUtil.success_response(data=customer_serializer.data)
 
     def create(self, request: Request) -> Response:
-        payload = request.data
-        shop_uid = request.query_params.get("shop_uid", None)
-        shop = ShopHandler.check_shop(shop_uid)
-        if shop is None:
-            return HttpUtil.error_response(message="Shop Not Defined!")
-        customer_serializer = self.serializer_class(data=payload)
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
+        customer_serializer = self.serializer_class(data=request.data)
         if not customer_serializer.is_valid():
             return HttpUtil.error_response(message=customer_serializer.errors)
 
         customer_serializer.save(
-            shop=shop, deleted_at__isnull=True, created_by=request.user
+            shop=shop, created_by=request.user
         )
         return HttpUtil.success_response(
             message="Customer Created", code=status.HTTP_201_CREATED
         )
 
-    def get(self, request: Request, uid: str) -> Response:
-        shop_uid = request.query_params.get("shop_uid", None)
-        shop = ShopHandler.check_shop(shop_uid)
+    def retrieve(self, request: Request, uid: str) -> Response:
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
         customer = UserHandler.check_shop_wise_customer(shop, uid)
-        if (shop and customer) is None:
-            return HttpUtil.error_response(message="Shop Not Defined!")
         customer_serializer = self.serializer_class(customer, many=False)
         return HttpUtil.success_response(data=customer_serializer.data)
 
     def update(self, request: Request, uid: str) -> Response:
-        shop_uid = request.query_params.get("shop_uid", None)
-        shop = ShopHandler.check_shop(shop_uid)
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
         customer = UserHandler.check_shop_wise_customer(shop, uid)
-        if (shop and customer) is None:
-            return HttpUtil.error_response(message="Shop Not Defined!")
-
         customer_serializer = self.serializer_class(
             customer, data=request.data, partial=True
         )
@@ -419,13 +404,66 @@ class CustomerApi(ViewSet):
         )
 
     def delete(self, request: Request, uid: str) -> Response:
-        shop_uid = request.query_params.get("shop_uid", None)
-        shop = ShopHandler.check_shop(shop_uid)
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
         customer = UserHandler.check_shop_wise_customer(shop, uid)
-        if (shop and customer) is None:
-            return HttpUtil.error_response(message="Shop Not Defined!")
         customer.delete()
         return HttpUtil.success_response(message="Customer Deleted")
+    
+
+class VendorApi(ViewSet):
+    permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
+    serializer_class = VenodrSerializer
+    lookup_field = "uid"
+
+    """
+        Checking shop_uid is exist or not for each and every operation
+        Gathering undeleted data's by condition "deleted_at__isnull=True"
+    """
+    def list(self, request: Request) -> Response:
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
+        vendors = Vendor.objects.filter(shop__uid=shop.uid, deleted_at__isnull=True)
+        vendor_serializer = self.serializer_class(vendors, many=True)
+        return HttpUtil.success_response(data=vendor_serializer.data)
+
+    def create(self, request: Request) -> Response:
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
+        vendor_serializer = self.serializer_class(data= request.data)
+        if not vendor_serializer.is_valid():
+            return HttpUtil.error_response(message=vendor_serializer.errors)
+
+        vendor_serializer.save(
+            shop=shop, created_by=request.user
+        )
+        return HttpUtil.success_response(
+            message="Vendor Created", code=status.HTTP_201_CREATED
+        )
+
+
+    def retrieve(self, request: Request, uid: str) -> Response:
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
+        vendor = UserHandler.check_shop_wise_vendor(shop, uid)
+        vendor_serializer = self.serializer_class(vendor, many=False)
+        return HttpUtil.success_response(data=vendor_serializer.data)
+
+    def update(self, request: Request, uid: str) -> Response:
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
+        vendor = UserHandler.check_shop_wise_vendor(shop, uid)
+        vendor_serializer = self.serializer_class(
+            vendor, data=request.data, partial=True
+        )
+        if not vendor_serializer.is_valid():
+            return HttpUtil.error_response(message=vendor_serializer.errors)
+
+        vendor_serializer.save()
+        return HttpUtil.success_response(
+            data=vendor_serializer.data, message="Vendor Updated"
+        )
+
+    def delete(self, request: Request, uid: str) -> Response:
+        shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
+        vendor = UserHandler.check_shop_wise_vendor(shop, uid)
+        vendor.delete()
+        return HttpUtil.success_response(message="Vendor Deleted")
 
 
 class PayableSaleApi(ViewSet):

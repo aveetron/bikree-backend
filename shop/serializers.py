@@ -7,7 +7,7 @@ from core.serializer_helpers import (InventorySerializerHelper,
                                      ShopSerializerHelper,
                                      UserSerializerHelper)
 
-from .models import Category, Customer, Inventory, Sale, SaleDetail, Shop
+from .models import Category, Customer, Inventory, Sale, SaleDetail, Shop, Vendor
 
 
 class ShopSerializer(BikreeBaseModelSerializer):
@@ -124,6 +124,24 @@ class CustomerSerializer(serializers.ModelSerializer):
         exclude = ["id"]
 
     def get_shop(self, obj: Customer) -> Dict[str, any]:
+        helper = ShopSerializerHelper(obj.shop)
+        return helper.get_shop()
+
+    def get_created_by(self, obj: Sale) -> Dict[str, any]:
+        helper = UserSerializerHelper(obj.created_by)
+        return helper.get_created_by()
+    
+
+class VenodrSerializer(serializers.ModelSerializer):
+    uid = serializers.CharField(required=False, source="uid.hex", read_only=True)
+    shop = serializers.SerializerMethodField(read_only=True)
+    created_by = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Vendor
+        exclude = ["id"]
+
+    def get_shop(self, obj: Vendor) -> Dict[str, any]:
         helper = ShopSerializerHelper(obj.shop)
         return helper.get_shop()
 
