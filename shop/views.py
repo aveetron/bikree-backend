@@ -66,7 +66,7 @@ class ShopApi(ViewSet):
         except Shop.DoesNotExist:
             return HttpUtil.error_response(message="shop not found.")
 
-    def delete(self, request: Request, uid: str = None) -> Response:
+    def destroy(self, request: Request, uid: str = None) -> Response:
         try:
             shop = Shop.objects.get(
                 uid=uid, owner=request.user, deleted_at__isnull=True
@@ -145,7 +145,7 @@ class CategoryApi(ViewSet):
         except Category.DoesNotExist:
             return HttpUtil.error_response(message="category not found.")
 
-    def delete(self, request: Request, uid: str = None) -> Response:
+    def destroy(self, request: Request, uid: str = None) -> Response:
         try:
             category = Category.objects.get(
                 uid=uid, created_by=request.user, deleted_at__isnull=True
@@ -218,7 +218,7 @@ class InventoryApi(ViewSet):
         except Inventory.DoesNotExist:
             return HttpUtil.error_response("Inventory doesn't found!")
 
-    def delete(self, request: Request, uid: str = None) -> Response:
+    def destroy(self, request: Request, uid: str = None) -> Response:
         try:
             inventory = Inventory.objects.get(uid=uid, deleted_at__isnull=True)
             inventory.delete()
@@ -310,7 +310,7 @@ class SaleApi(ViewSet):
     def list(self, request: Request) -> Response:
         shop_uid = request.query_params.get("shop_uid", None)
         if not shop_uid:
-            return HttpUtil.error_response(message="shop missing")
+            return HttpUtil.error_response(message="Shop Not Found!")
 
         sales = Sale.objects.filter(shop__uid=shop_uid, deleted_at__isnull=True)
         sale_serializer = self.sale_serializer_class(sales, many=True)
@@ -335,7 +335,7 @@ class SaleApi(ViewSet):
         sale_serializer = self.sale_serializer_class(sale, many=False)
         return HttpUtil.success_response(data=sale_serializer.data)
 
-    def delete(self, request: Request, uid: str) -> Response:
+    def destroy(self, request: Request, uid: str) -> Response:
         try:
             sale = Sale.objects.get(uid=uid, deleted_at__isnull=True)
         except Sale.DoesNotExist:
@@ -418,7 +418,7 @@ class CustomerApi(ViewSet):
             data=customer_serializer.data, message="Customer Updated"
         )
 
-    def delete(self, request: Request, uid: str) -> Response:
+    def destroy(self, request: Request, uid: str) -> Response:
         shop_uid = request.query_params.get("shop_uid", None)
         shop = ShopHandler.check_shop(shop_uid)
         customer = UserHandler.check_shop_wise_customer(shop, uid)
