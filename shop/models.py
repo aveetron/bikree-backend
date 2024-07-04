@@ -37,7 +37,7 @@ class Inventory(BikreeBaseModelWithUser):
 
     def __str__(self) -> str:
         return f"shop {self.shop.name}: name {self.name}"
-    
+
 
 class BusinessPartnerAbstractModel(BikreeBaseModelWithUser):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
@@ -54,7 +54,7 @@ class BusinessPartnerAbstractModel(BikreeBaseModelWithUser):
 
 class Customer(BusinessPartnerAbstractModel):
     pass
-    
+
 
 class Vendor(BusinessPartnerAbstractModel):
     pass

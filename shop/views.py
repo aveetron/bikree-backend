@@ -10,7 +10,8 @@ from core.http_utils import HttpUtil
 from core.permissions import IsShopEmployee, IsShopManager, IsShopOwner
 from core.utils import soft_delete
 from shop.handler import ShopHandler, UserHandler
-from shop.models import Category, Customer, Inventory, Sale, SaleDetail, Shop, Vendor
+from shop.models import (Category, Customer, Inventory, Sale, SaleDetail, Shop,
+                         Vendor)
 from shop.serializers import (CategorySerializer, CustomerSerializer,
                               InventorySerializer, SaleDetailSerializer,
                               SaleSerializer, ShopSerializer, VenodrSerializer)
@@ -376,9 +377,7 @@ class CustomerApi(ViewSet):
         if not customer_serializer.is_valid():
             return HttpUtil.error_response(message=customer_serializer.errors)
 
-        customer_serializer.save(
-            shop=shop, created_by=request.user
-        )
+        customer_serializer.save(shop=shop, created_by=request.user)
         return HttpUtil.success_response(
             message="Customer Created", code=status.HTTP_201_CREATED
         )
@@ -409,7 +408,7 @@ class CustomerApi(ViewSet):
         customer = UserHandler.check_shop_wise_customer(shop, uid)
         customer.delete()
         return HttpUtil.success_response(message="Customer Deleted")
-    
+
 
 class VendorApi(ViewSet):
     permission_classes = [IsShopOwner | IsShopManager | IsShopEmployee]
@@ -420,6 +419,7 @@ class VendorApi(ViewSet):
         Checking shop_uid is exist or not for each and every operation
         Gathering undeleted data's by condition "deleted_at__isnull=True"
     """
+
     def list(self, request: Request) -> Response:
         shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
         vendors = Vendor.objects.filter(shop__uid=shop.uid, deleted_at__isnull=True)
@@ -428,17 +428,14 @@ class VendorApi(ViewSet):
 
     def create(self, request: Request) -> Response:
         shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))
-        vendor_serializer = self.serializer_class(data= request.data)
+        vendor_serializer = self.serializer_class(data=request.data)
         if not vendor_serializer.is_valid():
             return HttpUtil.error_response(message=vendor_serializer.errors)
 
-        vendor_serializer.save(
-            shop=shop, created_by=request.user
-        )
+        vendor_serializer.save(shop=shop, created_by=request.user)
         return HttpUtil.success_response(
             message="Vendor Created", code=status.HTTP_201_CREATED
         )
-
 
     def retrieve(self, request: Request, uid: str) -> Response:
         shop = ShopHandler.check_shop(request.query_params.get("shop_uid", None))

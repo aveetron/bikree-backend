@@ -13,7 +13,7 @@ class BaseHelper:
 class UserHandler(BaseHelper):
 
     def check_shop_wise_customer(
-         shop: Shop, customer_uid: Union[str, None]
+        shop: Shop, customer_uid: Union[str, None]
     ) -> Union[Customer, HttpUtil]:
         if customer_uid is None:
             return HttpUtil.error_response(message="Customer Not Defined!")
@@ -26,23 +26,21 @@ class UserHandler(BaseHelper):
             return HttpUtil.error_response(message="Customer Not Defined!")
 
         return customer
-    
 
     def check_shop_wise_vendor(
         shop: Shop, vendor_uid: Union[str, None]
     ) -> Union[Vendor, HttpUtil]:
         if vendor_uid is None:
             return HttpUtil.error_response(message="Vendor Not Defined")
-        
-        try: 
+
+        try:
             vendor = Vendor.objects.get(
                 shop=shop, uid=vendor_uid, deleted_at__isnull=True
             )
         except Vendor.DoesNotExist:
             return HttpUtil.error_response(message="Vendor Not Defined")
-        
+
         return vendor
-        
 
 
 class ShopHandler(BaseHelper):
@@ -50,8 +48,8 @@ class ShopHandler(BaseHelper):
     @staticmethod
     def check_shop(shop_uid: Union[str, None]) -> Union[Shop, HttpUtil]:
         if shop_uid is None:
-            return HttpUtil.error_response(message="Shop Not Defined!")     
-        
+            return HttpUtil.error_response(message="Shop Not Defined!")
+
         try:
             shop = Shop.objects.get(uid=shop_uid, deleted_at__isnull=True)
         except Shop.DoesNotExist:

@@ -7,7 +7,8 @@ from core.serializer_helpers import (InventorySerializerHelper,
                                      ShopSerializerHelper,
                                      UserSerializerHelper)
 
-from .models import Category, Customer, Inventory, Sale, SaleDetail, Shop, Vendor
+from .models import (Category, Customer, Inventory, Sale, SaleDetail, Shop,
+                     Vendor)
 
 
 class ShopSerializer(BikreeBaseModelSerializer):
@@ -130,7 +131,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     def get_created_by(self, obj: Sale) -> Dict[str, any]:
         helper = UserSerializerHelper(obj.created_by)
         return helper.get_created_by()
-    
+
 
 class VenodrSerializer(serializers.ModelSerializer):
     uid = serializers.CharField(required=False, source="uid.hex", read_only=True)
