@@ -10,6 +10,7 @@ from core.routes.inventory import inventory_router
 from core.routes.sale import sale_router
 from core.routes.shop import shop_router
 from core.routes.users import users_router
+from core.routes.vendor import vendor_router
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -23,4 +24,5 @@ urlpatterns = [
     path("api/v1/inventory/", include(inventory_router.urls)),
     path("api/v1/sale/", include(sale_router.urls)),
     path("api/v1/customer/", include(customer_router.urls)),
+    path("api/v1/vendor/", include(vendor_router.urls)),
 ]
