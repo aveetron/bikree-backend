@@ -11,11 +11,16 @@ from core.logger import Logger
 from core.permissions import IsShopEmployee, IsShopManager, IsShopOwner
 from core.utils import soft_delete
 from shop.handler import ShopHandler, UserHandler
-from shop.models import (Category, Customer, Inventory, Sale, SaleDetail, Shop,
-                         Vendor)
-from shop.serializers import (CategorySerializer, CustomerSerializer,
-                              InventorySerializer, SaleDetailSerializer,
-                              SaleSerializer, ShopSerializer, VenodrSerializer)
+from shop.models import Category, Customer, Inventory, Sale, SaleDetail, Shop, Vendor
+from shop.serializers import (
+    CategorySerializer,
+    CustomerSerializer,
+    InventorySerializer,
+    SaleDetailSerializer,
+    SaleSerializer,
+    ShopSerializer,
+    VenodrSerializer,
+)
 
 
 class ShopApi(ViewSet):
@@ -27,12 +32,16 @@ class ShopApi(ViewSet):
         try:
             shops = Shop.objects.filter(owner=request, deleted_at__isnull=True)
             if request.query_params.get("shop_name", None):
-                shops = shops.filter(name__icontains=request.query_params.get("shop_name"))
+                shops = shops.filter(
+                    name__icontains=request.query_params.get("shop_name")
+                )
 
             shop_serializer = self.serializer_class(shops, many=True)
-            return HttpUtil.success_response(data=shop_serializer.data, message="success")
+            return HttpUtil.success_response(
+                data=shop_serializer.data, message="success"
+            )
         except Exception as e:
-            response = Logger.discord_logger(e)
+            Logger.discord_logger(e)
             return HttpUtil.error_response(message=e.args[0])
 
     def create(self, request: Request) -> Response:
@@ -285,7 +294,7 @@ class StockOutApi(ViewSet):
                 return HttpUtil.error_response(message="stock qty missing.")
 
             if decimal.Decimal(request.data["total_stock"]) > decimal.Decimal(
-                    inventory.total_stock
+                inventory.total_stock
             ):
                 return HttpUtil.error_response(message="you don't have enough stock")
 

@@ -3,12 +3,13 @@ from typing import Any, Dict
 from rest_framework import serializers
 
 from core.base_abstract_serializers import BikreeBaseModelSerializer
-from core.serializer_helpers import (InventorySerializerHelper,
-                                     ShopSerializerHelper,
-                                     UserSerializerHelper)
+from core.serializer_helpers import (
+    InventorySerializerHelper,
+    ShopSerializerHelper,
+    UserSerializerHelper,
+)
 
-from .models import (Category, Customer, Inventory, Sale, SaleDetail, Shop,
-                     Vendor)
+from .models import Category, Customer, Inventory, Sale, SaleDetail, Shop, Vendor
 
 
 class ShopSerializer(BikreeBaseModelSerializer):
