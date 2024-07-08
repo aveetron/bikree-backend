@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from core.http_utils import HttpUtil
+from core.logger import Logger
 from core.permissions import IsShopEmployee, IsShopManager, IsShopOwner
 from core.utils import soft_delete
 from shop.handler import ShopHandler, UserHandler
@@ -23,12 +24,15 @@ class ShopApi(ViewSet):
     lookup_field = "uid"
 
     def list(self, request: Request) -> Response:
-        shops = Shop.objects.filter(owner=request.user, deleted_at__isnull=True)
-        if request.query_params.get("shop_name", None):
-            shops = shops.filter(name__icontains=request.query_params.get("shop_name"))
+        try:
+            shops = Shop.objects.filter(owner=request.user, deleted_at__isnull=True)
+            if request.query_params.get("shop_name", None):
+                shops = shops.filter(name__icontains=request.query_params.get("shop_name"))
 
-        shop_serializer = self.serializer_class(shops, many=True)
-        return HttpUtil.success_response(data=shop_serializer.data, message="success")
+            shop_serializer = self.serializer_class(shops, many=True)
+            return HttpUtil.success_response(data=shop_serializer.data, message="success")
+        except Exception as e:
+            Logger.discord_logger(e)
 
     def create(self, request: Request) -> Response:
         shop_serializer = self.serializer_class(
@@ -280,7 +284,7 @@ class StockOutApi(ViewSet):
                 return HttpUtil.error_response(message="stock qty missing.")
 
             if decimal.Decimal(request.data["total_stock"]) > decimal.Decimal(
-                inventory.total_stock
+                    inventory.total_stock
             ):
                 return HttpUtil.error_response(message="you don't have enough stock")
 

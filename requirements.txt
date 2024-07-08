@@ -1,15 +1,19 @@
 asgiref==3.8.1
+black==24.4.2
 certifi==2024.6.2
 charset-normalizer==3.3.2
 click==8.1.7
 coreapi==2.3.3
 coreschema==0.0.4
+discord-logger==1.2.3
+discord-webhook==0.13.0
 Django==4.2.13
 django-cors-headers==4.4.0
 django-filter==24.2
 djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 drf-yasg==1.21.7
+flake8==7.1.0
 idna==3.7
 importlib_metadata==7.1.0
 inflection==0.5.1
@@ -27,8 +31,9 @@ platformdirs==4.2.2
 pycodestyle==2.12.0
 pyflakes==3.2.0
 PyJWT==2.8.0
+python-dotenv==1.0.1
 pytz==2024.1
-PyYAML==6.0.1
+PyYAML==5.4.1
 requests==2.32.3
 ruff==0.5.0
 simplejson==3.19.2
@@ -36,4 +41,5 @@ sqlparse==0.5.0
 tomli==2.0.1
 typing_extensions==4.12.2
 uritemplate==4.1.1
+urllib3==2.2.2
 zipp==3.19.2
