@@ -6,5 +6,3 @@ static
 __pycache__
 /__pycache__/
 .env
-core/.env/
-/core/.env/
