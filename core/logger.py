@@ -67,19 +67,22 @@ class Logger:
     @staticmethod
     def discord_logger(e: Exception) -> Union[None, Response]:
         try:
-            logger = DiscordLogger(webhook_url=os.environ.get("webhook_url"), **options)
+            webhook_url = os.environ.get("webhook_url")
+            if not webhook_url:
+                raise ValueError("Webhook URL not found in environment variables")
+
+            logger = DiscordLogger(webhook_url=webhook_url, **options)
             logger.construct(
                 title=type(e).__name__,
-                description=str(e.args[0]),
-                error=str(e),
+                description=str(e.args[0]) if e.args else "No description",
+                error=str(e)
             )
+
             try:
                 response = logger.send()
+                return response
             except Exception as excep:
-                return HttpUtil.error_response(
-                    message=excep.args[0]
-                )
-        except Exception as e:
-            return HttpUtil.error_response(
-                message=e.args[0]
-            )
+                return HttpUtil.error_response(message=f"Failed to send log: {str(excep)}")
+
+        except Exception as err:
+            return HttpUtil.error_response(message=f"Logger setup failed: {str(err)}")
