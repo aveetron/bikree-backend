@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    command: >
+      sh -c "
+        python manage.py makemigrations &&
+        python manage.py migrate &&
+        python manage.py runserver
+      "
+    env_file:
+      - .env
+    volumes:
+      - /Users/avee/workspace/copotron/bikree-backend/docker-volumes/:/app/
+    ports:
+      - "8000:8000"
