@@ -36,7 +36,7 @@ class ShopApi(ViewSet):
                     name__icontains=request.query_params.get("shop_name")
                 )
 
-            shop_serializer = self.serializer_class(shop, many=True)
+            shop_serializer = self.serializer_class(shops, many=True)
             return HttpUtil.success_response(
                 data=shop_serializer.data, message="success"
             )
