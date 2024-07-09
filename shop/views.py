@@ -30,13 +30,13 @@ class ShopApi(ViewSet):
 
     def list(self, request: Request) -> Response:
         try:
-            shops = Shop.objects.filter(owner=request, deleted_at__isnull=True)
+            shops = Shop.objects.filter(owner=request.user, deleted_at__isnull=True)
             if request.query_params.get("shop_name", None):
                 shops = shops.filter(
                     name__icontains=request.query_params.get("shop_name")
                 )
 
-            shop_serializer = self.serializer_class(shops, many=True)
+            shop_serializer = self.serializer_class(shop, many=True)
             return HttpUtil.success_response(
                 data=shop_serializer.data, message="success"
             )
