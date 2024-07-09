@@ -7,11 +7,9 @@ services:
       sh -c "
         python manage.py makemigrations &&
         python manage.py migrate &&
-        python manage.py runserver
+        python manage.py runserver 0.0.0.0:8000
       "
     env_file:
       - .env
-    volumes:
-      - /Users/avee/workspace/copotron/bikree-backend/docker-volumes/:/app/
     ports:
-      - "8000:8000"
+      - "8001:8000"
