@@ -3,6 +3,7 @@ version: "3.8"
 services:
   api:
     build: .
+    restart: always
     command: >
       sh -c "
         python manage.py makemigrations &&
