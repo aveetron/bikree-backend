@@ -29,6 +29,7 @@ PROJECT_APPS = [
     "users",
     "config",
     "shop",
+    "sales_representative",
 ]
 
 INSTALLED_APPS = BUILDIN_APPS + THIRED_PARTY_APSS + PROJECT_APPS

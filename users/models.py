@@ -8,9 +8,11 @@ from users.managers import CustomUserManager
 class Role(BikreeBaseModel):
     ADMIN = "Admin"
     BUSINESS_ANALYST = "Business Analyst"
+    BUSINESS_OWNER = "Business Owner"
     SHOP_OWNER = "Shop Owner"
     SHOP_EMPLOYEE = "Shop Employee"
     SHOP_MANAGER = "Shop Manager"
+    SALES_REPRESENTATIVE = "Sales Representative"
     name = models.CharField(max_length=30)
 
     def __str__(self) -> str:

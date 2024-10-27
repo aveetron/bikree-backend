@@ -85,3 +85,8 @@ class IsShopOwnerOrEmployee(BaseUserPermission):
 
     def get_role(self) -> list[str]:
         return [Role.SHOP_OWNER, Role.SHOP_EMPLOYEE]
+    
+class IsSalesRepresentative(BaseUserPermission):
+
+    def get_role(self) -> str:
+        return Role.SALES_REPRESENTATIVE
