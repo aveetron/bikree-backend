@@ -2,8 +2,8 @@ from rest_framework.viewsets import ViewSet
 from rest_framework import status
 
 from core.http_utils import HttpUtil
-from core.permissions import IsShopOwner
-from .models import Order, OrderDetail
+from core.permissions import IsSalesRepresentative, IsShopOwner
+from .models import Order
 from .serializers import OrderDetailSerializer, OrderSerializer
 
 
@@ -14,7 +14,7 @@ class OrderApi(ViewSet):
 
     def list(self, request):
         try:
-            orders = Order.objects.filter(sales_representative=request.user)
+            orders = Order.objects.filter(created_by=request.user)
             if request.query_params.get("order_no", None):
                 orders = orders.filter(order_no=request.query_params.get("order_no"))
             elif request.query_params.get("status", None):
@@ -86,7 +86,7 @@ class ApproveOrderApi(ViewSet):
             order = Order.objects.get(uid=uid, status=False)
             if not order:
                 return HttpUtil.error_response(message="Order Not Found", code=status.HTTP_404_NOT_FOUND)   
-            
+            # change the status for making this order approved
             order.status = True
             order.save()
             return HttpUtil.success_response(message="Order Updated", code=status.HTTP_200_OK)
